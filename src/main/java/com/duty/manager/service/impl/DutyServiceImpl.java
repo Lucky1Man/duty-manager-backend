@@ -91,9 +91,8 @@ public class DutyServiceImpl implements DutyService {
             Duty duty = getRowDuty(identifier);
             dutyRepository.delete(duty);
             dutyRepository.flush();
-        } catch (ServiceException ignored) {
-        } catch (Exception e) {
-            throw new IllegalArgumentException(e);
+        }catch (Exception e) {
+            throw new ServiceException(e.getMessage());
         }
     }
 
