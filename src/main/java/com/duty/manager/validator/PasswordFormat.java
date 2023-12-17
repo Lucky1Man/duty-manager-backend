@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PasswordFormat {
-    String message() default "The only allowed characters for password are english letters, _, & and -";
+    String message() default "The only allowed characters for password are english letters, number, _, & and -";
 
     Class<?>[] groups() default {};
 

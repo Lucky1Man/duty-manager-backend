@@ -11,6 +11,7 @@ public class PasswordValidator implements ConstraintValidator<PasswordFormat, St
     public boolean isValid(String value, ConstraintValidatorContext context) {
         return value.chars().allMatch(ch ->
                 Character.isLetter(ch) && Character.UnicodeScript.of(ch) == Character.UnicodeScript.LATIN ||
+                        Character.isDigit(ch) ||
                         ch == '_' || ch == '-' || ch == '&'
         );
     }
