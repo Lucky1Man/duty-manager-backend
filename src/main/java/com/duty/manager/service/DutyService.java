@@ -11,11 +11,11 @@ public interface DutyService {
 
     UUID createDuty(CreateDutyDTO dutyDTO);
 
-    List<GetDutyDTO> getDuties(Long page, Long pageSize);
+    List<GetDutyDTO> getDuties(Integer page, Integer pageSize);
 
-    GetDutyDTO getDutyByIdentifier(String identifier);
+    GetDutyDTO getDuty(String identifier);
 
-    void updateDuty(UpdateDutyDTO updateDutyDTO);
+    void updateDuty(String identifier, UpdateDutyDTO updateDutyDTO);
 
     void deleteDuty(String identifier);
 
