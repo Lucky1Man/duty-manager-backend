@@ -8,6 +8,8 @@ import com.duty.manager.repository.DutyRepository;
 import com.duty.manager.service.DutyService;
 import com.duty.manager.service.ServiceException;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
@@ -45,7 +47,7 @@ public class DutyServiceImpl implements DutyService {
     }
 
     @Override
-    public List<GetDutyDTO> getDuties(Integer page, Integer pageSize) {
+    public List<GetDutyDTO> getDuties(@NotNull Integer page, @NotNull Integer pageSize) {
         return dutyRepository.findAll(PageRequest.of(page, pageSize)).get()
                 .map(this::dutyEntityToGetDTO).toList();
     }
@@ -55,13 +57,13 @@ public class DutyServiceImpl implements DutyService {
     }
 
     @Override
-    public GetDutyDTO getDuty(String identifier) {
+    public GetDutyDTO getDuty(@NotNull String identifier) {
         return dutyEntityToGetDTO(getRowDuty(identifier));
     }
 
     private Duty getRowDuty(String identifier) {
         Optional<Duty> duty;
-        try{
+        try {
             duty = dutyRepository.findById(UUID.fromString(identifier));
         } catch (IllegalArgumentException e) {
             duty = dutyRepository.findByName(identifier);
@@ -73,12 +75,12 @@ public class DutyServiceImpl implements DutyService {
 
     @Override
     @Transactional
-    public void updateDuty(String identifier, UpdateDutyDTO dutyUpdates) {
+    public void updateDuty(@NotNull String identifier, @Valid UpdateDutyDTO dutyUpdates) {
         Duty duty = getRowDuty(identifier);
-        if(dutyUpdates.getName() != null && dutyRepository.findByName(dutyUpdates.getName()).isEmpty()) {
+        if (dutyUpdates.getName() != null && dutyRepository.findByName(dutyUpdates.getName()).isEmpty()) {
             duty.setName(dutyUpdates.getName());
         }
-        if(dutyUpdates.getDescription() != null) {
+        if (dutyUpdates.getDescription() != null) {
             duty.setDescription(dutyUpdates.getDescription());
         }
         dutyRepository.flush();
@@ -86,12 +88,12 @@ public class DutyServiceImpl implements DutyService {
 
     @Override
     @Transactional
-    public void deleteDuty(String identifier) {
+    public void deleteDuty(@NotNull String identifier) {
         try {
             Duty duty = getRowDuty(identifier);
             dutyRepository.delete(duty);
             dutyRepository.flush();
-        }catch (Exception e) {
+        } catch (Exception e) {
             throw new ServiceException(e.getMessage());
         }
     }

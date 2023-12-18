@@ -46,7 +46,7 @@ public class DutyController {
                     )
             )
     )
-    public List<GetDutyDTO> getDuty(@RequestParam(required = false, defaultValue = "0")
+    public List<GetDutyDTO> getDuties(@RequestParam(required = false, defaultValue = "0")
                                    Integer page,
                                    @RequestParam(required = false, defaultValue = "50")
                                    Integer pageSize) {

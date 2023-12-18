@@ -3,20 +3,24 @@ package com.duty.manager.service;
 import com.duty.manager.dto.CreateDutyDTO;
 import com.duty.manager.dto.GetDutyDTO;
 import com.duty.manager.dto.UpdateDutyDTO;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 import java.util.UUID;
 
+@Validated
 public interface DutyService {
 
-    UUID createDuty(CreateDutyDTO dutyDTO);
+    UUID createDuty(@Valid CreateDutyDTO dutyDTO);
 
-    List<GetDutyDTO> getDuties(Integer page, Integer pageSize);
+    List<GetDutyDTO> getDuties(@NotNull Integer page, @NotNull Integer pageSize);
 
-    GetDutyDTO getDuty(String identifier);
+    GetDutyDTO getDuty(@NotNull String identifier);
 
-    void updateDuty(String identifier, UpdateDutyDTO updateDutyDTO);
+    void updateDuty(@NotNull String identifier, @Valid UpdateDutyDTO updateDutyDTO);
 
-    void deleteDuty(String identifier);
+    void deleteDuty(@NotNull String identifier);
 
 }

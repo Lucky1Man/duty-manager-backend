@@ -22,4 +22,6 @@ public class ParticipantController {
         return participantService.registerParticipant(participantDTO);
     }
 
+    //TODO add endpoint to receive participant by email or id
+
 }
