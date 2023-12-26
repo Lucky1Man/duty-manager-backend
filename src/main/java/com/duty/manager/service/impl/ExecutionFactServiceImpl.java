@@ -64,7 +64,9 @@ public class ExecutionFactServiceImpl implements ExecutionFactService {
     }
 
     private GetExecutionFactDTO mapEntityToGetDTO(ExecutionFact fact) {
-        return modelMapper.map(fact, GetExecutionFactDTO.class);
+        GetExecutionFactDTO getDTO = modelMapper.map(fact, GetExecutionFactDTO.class);
+        getDTO.getTestimonies().forEach(t -> t.setDutyName(getDTO.getDutyName()));
+        return getDTO;
     }
 
     @Override
