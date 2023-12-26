@@ -1,16 +1,15 @@
 package com.duty.manager.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Data
-@Builder(setterPrefix = "with")
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetExecutionFactDTO {
@@ -29,6 +28,6 @@ public class GetExecutionFactDTO {
 
     private String dutyName;
 
-    //TODO add list of testimonies
+    private List<GetTestimonyDTO> testimonies;
 
 }

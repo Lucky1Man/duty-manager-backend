@@ -40,8 +40,8 @@ public class ExecutionFactController {
         return executionFactService.recordExecutionFact(factDTO);
     }
 
-    @PostMapping("/{executionFactId}")
-    public void finishExecution(@PathVariable UUID executionFactId) {
+    @PostMapping("/finished")
+    public void finishExecution(@RequestBody UUID executionFactId) {
         executionFactService.finishExecution(executionFactId);
     }
 

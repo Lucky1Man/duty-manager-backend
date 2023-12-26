@@ -1,9 +1,11 @@
 package com.duty.manager.service.impl;
 
 import com.duty.manager.dto.GetExecutionFactDTO;
+import com.duty.manager.dto.GetTestimonyDTO;
 import com.duty.manager.dto.RecordExecutionFactDTO;
 import com.duty.manager.entity.ExecutionFact;
 import com.duty.manager.repository.ExecutionFactRepository;
+import com.duty.manager.repository.TestimonyRepository;
 import com.duty.manager.service.DutyService;
 import com.duty.manager.service.ExecutionFactService;
 import com.duty.manager.service.ParticipantService;
@@ -41,6 +43,8 @@ public class ExecutionFactServiceImpl implements ExecutionFactService {
 
     private final ParticipantService participantService;
 
+    private final TestimonyRepository testimonyRepository;
+
     @PostConstruct
     private void configureModelMapper() {
         modelMapper.getConfiguration().setAmbiguityIgnored(true);
@@ -67,7 +71,18 @@ public class ExecutionFactServiceImpl implements ExecutionFactService {
         executionFactDTO.setExecutorFullName(
                 participantService.getParticipant(fact.getExecutorId().toString()).getFullName()
         );
-        executionFactDTO.setDutyName(dutyService.getDuty(fact.getDutyId().toString()).getName());
+        String dutyName = dutyService.getDuty(fact.getDutyId().toString()).getName();
+        executionFactDTO.setDutyName(dutyName);
+        executionFactDTO.setTestimonies(
+                testimonyRepository.findAllByExecutionFactId(fact.getId(), PageRequest.ofSize(50)).stream()
+                        .map(t -> {
+                            GetTestimonyDTO getDTO = modelMapper.map(t, GetTestimonyDTO.class);
+                            getDTO.setDutyName(dutyName);
+                            getDTO.setWitnessFullName(participantService.getParticipant(getDTO.getWitnessId().toString()).getFullName());
+                            return getDTO;
+                        })
+                        .toList()
+        );
         return executionFactDTO;
     }
 

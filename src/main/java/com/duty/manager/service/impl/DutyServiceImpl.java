@@ -9,6 +9,8 @@ import com.duty.manager.service.DutyService;
 import com.duty.manager.service.ServiceException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -47,7 +49,7 @@ public class DutyServiceImpl implements DutyService {
     }
 
     @Override
-    public List<GetDutyDTO> getDuties(@NotNull Integer page, @NotNull Integer pageSize) {
+    public List<GetDutyDTO> getDuties(@NotNull @Min(0) Integer page, @Max(50) @NotNull Integer pageSize) {
         return dutyRepository.findAll(PageRequest.of(page, pageSize)).get()
                 .map(this::dutyEntityToGetDTO).toList();
     }

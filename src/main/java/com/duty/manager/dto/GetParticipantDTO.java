@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
-@Builder
+@Builder(setterPrefix = "with")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
