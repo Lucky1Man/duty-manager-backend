@@ -4,6 +4,9 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.persistence.Version;
@@ -18,6 +21,7 @@ import lombok.ToString;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.UUID;
 
 @Entity(name = "Testimony")
@@ -33,7 +37,6 @@ import java.util.UUID;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
 @Builder(setterPrefix = "with")
 public class Testimony {
     @Id
@@ -41,13 +44,15 @@ public class Testimony {
     @Column(name = "id", nullable = false, columnDefinition="uuid")
     private UUID id;
 
-    @Column(name = "witness_id", nullable = false, columnDefinition="uuid not null")
-    @NotNull(message = "Testimony must have witness id")
-    private UUID witnessId;
+    @NotNull(message = "Testimony must have witness")
+    @OneToOne(optional = false)
+    @JoinColumn(name = "witness_id", referencedColumnName = "id", nullable = false)
+    private Participant witness;
 
-    @Column(name = "execution_fact_id", nullable = false, columnDefinition="uuid not null")
-    @NotNull(message = "Testimony must have execution fact id")
-    private UUID executionFactId;
+    @NotNull(message = "Testimony must have execution fact")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "execution_fact_id", referencedColumnName = "id", nullable = false)
+    private ExecutionFact executionFact;
 
     @Column(name = "timestamp", nullable = false)
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
@@ -55,4 +60,17 @@ public class Testimony {
 
     @Version
     private Long version;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Testimony testimony = (Testimony) o;
+        return Objects.equals(id, testimony.id) && Objects.equals(witness, testimony.witness) && Objects.equals(executionFact, testimony.executionFact);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, witness, executionFact);
+    }
 }

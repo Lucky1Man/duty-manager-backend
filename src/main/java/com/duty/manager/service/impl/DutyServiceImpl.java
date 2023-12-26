@@ -23,6 +23,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class DutyServiceImpl implements DutyService {
 
     private final DutyRepository dutyRepository;
@@ -30,7 +31,6 @@ public class DutyServiceImpl implements DutyService {
     private final ModelMapper modelMapper;
 
     @Override
-    @Transactional
     public UUID createDuty(CreateDutyDTO dutyDTO) {
         throwExceptionIfExist(dutyDTO);
         Duty duty = modelMapper.map(dutyDTO, Duty.class);
@@ -76,7 +76,6 @@ public class DutyServiceImpl implements DutyService {
     }
 
     @Override
-    @Transactional
     public void updateDuty(@NotNull String identifier, @Valid UpdateDutyDTO dutyUpdates) {
         Duty duty = getRowDuty(identifier);
         if (dutyUpdates.getName() != null && dutyRepository.findByName(dutyUpdates.getName()).isEmpty()) {
@@ -89,7 +88,6 @@ public class DutyServiceImpl implements DutyService {
     }
 
     @Override
-    @Transactional
     public void deleteDuty(@NotNull String identifier) {
         try {
             Duty duty = getRowDuty(identifier);

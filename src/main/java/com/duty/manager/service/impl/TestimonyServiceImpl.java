@@ -2,12 +2,13 @@ package com.duty.manager.service.impl;
 
 import com.duty.manager.dto.GetTestimonyDTO;
 import com.duty.manager.entity.Testimony;
+import com.duty.manager.repository.ExecutionFactRepository;
+import com.duty.manager.repository.ParticipantRepository;
 import com.duty.manager.repository.TestimonyRepository;
-import com.duty.manager.service.ExecutionFactService;
-import com.duty.manager.service.ParticipantService;
 import com.duty.manager.service.ServiceException;
 import com.duty.manager.service.TestimonyService;
 import com.duty.manager.service.TimeService;
+import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -22,34 +23,35 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class TestimonyServiceImpl implements TestimonyService {
 
     private final TimeService timeService;
 
     private final TestimonyRepository testimonyRepository;
 
-    private final ParticipantService participantService;
+    private final ParticipantRepository participantRepository;
 
-    private final ExecutionFactService executionFactService;
+    private final ExecutionFactRepository executionFactRepository;
 
     private final ModelMapper modelMapper;
 
     @Override
     public UUID testifyExecutionFact(@NotNull UUID executionFactId, @NotNull Authentication authentication) {
-        UUID witnessId = participantService.getParticipant(authentication.getName()).getId();
+        UUID witnessId = participantRepository.findByEmail(authentication.getName()).orElseThrow().getId();
         checkIfExist(executionFactId);
         throwIfPersonAlreadyTestifiedFact(executionFactId, witnessId);
         return testimonyRepository.save(
                 Testimony.builder()
-                        .withExecutionFactId(executionFactId)
-                        .withWitnessId(witnessId)
+                        .withExecutionFact(executionFactRepository.getReferenceById(executionFactId))
+                        .withWitness(participantRepository.getReferenceById(witnessId))
                         .withTimestamp(timeService.now())
                         .build()
         ).getId();
     }
 
     private void checkIfExist(UUID executionFactId) {
-        executionFactService.getById(executionFactId);
+        executionFactRepository.getReferenceById(executionFactId);
     }
 
     private void throwIfPersonAlreadyTestifiedFact(UUID executionFactId, UUID witnessId) {
@@ -70,8 +72,7 @@ public class TestimonyServiceImpl implements TestimonyService {
 
     private GetTestimonyDTO mapToGetDTO(Testimony t) {
         GetTestimonyDTO getDTO = modelMapper.map(t, GetTestimonyDTO.class);
-        getDTO.setWitnessFullName(participantService.getParticipant(getDTO.getWitnessId().toString()).getFullName());
-        getDTO.setDutyName(executionFactService.getById(getDTO.getExecutionFactId()).getDutyName());
+        getDTO.setDutyName(t.getExecutionFact().getDuty().getName());
         return getDTO;
     }
 

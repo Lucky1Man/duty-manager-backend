@@ -1,14 +1,12 @@
 package com.duty.manager.service.impl;
 
 import com.duty.manager.dto.GetExecutionFactDTO;
-import com.duty.manager.dto.GetTestimonyDTO;
 import com.duty.manager.dto.RecordExecutionFactDTO;
 import com.duty.manager.entity.ExecutionFact;
+import com.duty.manager.repository.DutyRepository;
 import com.duty.manager.repository.ExecutionFactRepository;
-import com.duty.manager.repository.TestimonyRepository;
-import com.duty.manager.service.DutyService;
+import com.duty.manager.repository.ParticipantRepository;
 import com.duty.manager.service.ExecutionFactService;
-import com.duty.manager.service.ParticipantService;
 import com.duty.manager.service.ServiceException;
 import com.duty.manager.service.TimeService;
 import jakarta.annotation.Nullable;
@@ -29,6 +27,7 @@ import java.util.function.Supplier;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ExecutionFactServiceImpl implements ExecutionFactService {
 
     public static final int MAXIMAL_PAGE_SIZE = 200;
@@ -39,11 +38,9 @@ public class ExecutionFactServiceImpl implements ExecutionFactService {
 
     private final ModelMapper modelMapper;
 
-    private final DutyService dutyService;
+    private final DutyRepository dutyRepository;
 
-    private final ParticipantService participantService;
-
-    private final TestimonyRepository testimonyRepository;
+    private final ParticipantRepository participantRepository;
 
     @PostConstruct
     private void configureModelMapper() {
@@ -67,29 +64,15 @@ public class ExecutionFactServiceImpl implements ExecutionFactService {
     }
 
     private GetExecutionFactDTO mapEntityToGetDTO(ExecutionFact fact) {
-        GetExecutionFactDTO executionFactDTO = modelMapper.map(fact, GetExecutionFactDTO.class);
-        executionFactDTO.setExecutorFullName(
-                participantService.getParticipant(fact.getExecutorId().toString()).getFullName()
-        );
-        String dutyName = dutyService.getDuty(fact.getDutyId().toString()).getName();
-        executionFactDTO.setDutyName(dutyName);
-        executionFactDTO.setTestimonies(
-                testimonyRepository.findAllByExecutionFactId(fact.getId(), PageRequest.ofSize(50)).stream()
-                        .map(t -> {
-                            GetTestimonyDTO getDTO = modelMapper.map(t, GetTestimonyDTO.class);
-                            getDTO.setDutyName(dutyName);
-                            getDTO.setWitnessFullName(participantService.getParticipant(getDTO.getWitnessId().toString()).getFullName());
-                            return getDTO;
-                        })
-                        .toList()
-        );
-        return executionFactDTO;
+        return modelMapper.map(fact, GetExecutionFactDTO.class);
     }
 
     @Override
     public UUID recordExecutionFact(RecordExecutionFactDTO factDTO) {
         ExecutionFact fact = modelMapper.map(factDTO, ExecutionFact.class);
         fact.setStartTime(timeService.now());
+        fact.setDuty(dutyRepository.getReferenceById(fact.getDuty().getId()));
+        fact.setExecutor(participantRepository.getReferenceById(fact.getExecutor().getId()));
         return executionFactRepository.save(fact).getId();
     }
 
@@ -103,7 +86,6 @@ public class ExecutionFactServiceImpl implements ExecutionFactService {
     }
 
     @Override
-    @Transactional
     public void finishExecution(UUID id) {
         ExecutionFact executionFact = getRawExecutionFact(id);
         if(executionFact.getFinishTime() != null) {

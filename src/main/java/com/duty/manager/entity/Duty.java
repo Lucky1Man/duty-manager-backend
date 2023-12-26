@@ -16,6 +16,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.validator.constraints.Length;
 
+import java.util.Objects;
 import java.util.UUID;
 
 @Entity(name = "Duty")
@@ -57,6 +58,18 @@ public class Duty {
     @Version
     private Long version;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Duty duty = (Duty) o;
+        return Objects.equals(id, duty.id) && Objects.equals(name, duty.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
+    }
 }
 
 

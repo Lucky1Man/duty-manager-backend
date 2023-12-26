@@ -18,7 +18,7 @@ public interface ExecutionFactRepository extends JpaRepository<ExecutionFact, UU
     List<ExecutionFact> getAllFinishedInRange(@Param("from") LocalDateTime from, @Param("to") LocalDateTime to,
                                               Pageable pageable);
 
-    @Query("select f from ExecutionFact f where f.finishTime >= :from and f.finishTime <= :to and f.executorId = :participantId")
+    @Query("select f from ExecutionFact f where f.finishTime >= :from and f.finishTime <= :to and f.executor.id = :participantId")
     List<ExecutionFact> getAllFinishedInRangeForParticipant(@Param("from") LocalDateTime from,
                                                             @Param("to") LocalDateTime to,
                                                             @Param("participantId") UUID participantId,
@@ -28,7 +28,7 @@ public interface ExecutionFactRepository extends JpaRepository<ExecutionFact, UU
     List<ExecutionFact> getAllActiveInRange(@Param("from") LocalDateTime from, @Param("to") LocalDateTime to,
                                             Pageable pageable);
 
-    @Query("select f from ExecutionFact f where f.startTime >= :from and f.startTime <= :to and f.executorId = :participantId and f.finishTime is null")
+    @Query("select f from ExecutionFact f where f.startTime >= :from and f.startTime <= :to and f.executor.id = :participantId and f.finishTime is null")
     List<ExecutionFact> getAllActiveInRangeForParticipant(@Param("from") LocalDateTime from,
                                                           @Param("to") LocalDateTime to,
                                                           @Param("participantId") UUID participantId,

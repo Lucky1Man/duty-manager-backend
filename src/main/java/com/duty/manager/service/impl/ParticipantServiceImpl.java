@@ -6,6 +6,7 @@ import com.duty.manager.entity.Participant;
 import com.duty.manager.repository.ParticipantRepository;
 import com.duty.manager.service.ParticipantService;
 import com.duty.manager.service.ServiceException;
+import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -22,6 +23,7 @@ import java.util.function.Supplier;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ParticipantServiceImpl implements ParticipantService {
 
     private final ParticipantRepository participantRepository;
