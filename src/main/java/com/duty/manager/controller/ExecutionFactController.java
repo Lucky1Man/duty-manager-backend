@@ -1,8 +1,10 @@
 package com.duty.manager.controller;
 
 import com.duty.manager.dto.GetExecutionFactDTO;
+import com.duty.manager.dto.GetTestimonyDTO;
 import com.duty.manager.dto.RecordExecutionFactDTO;
 import com.duty.manager.service.ExecutionFactService;
+import com.duty.manager.service.TestimonyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,10 +26,12 @@ public class ExecutionFactController {
 
     private final ExecutionFactService executionFactService;
 
-    @GetMapping(params = {"from", "to"})
-    public List<GetExecutionFactDTO> getForDateRange(@RequestParam LocalDateTime from,
-                                                     @RequestParam(required = false) LocalDateTime to) {
-        return executionFactService.getForDateRange(from, to);
+    private final TestimonyService testifyExecutionFact;
+
+    @GetMapping(path = "/finished", params = {"from"})
+    public List<GetExecutionFactDTO> getFinishedForDateRange(@RequestParam LocalDateTime from,
+                                                             @RequestParam(required = false) LocalDateTime to) {
+        return executionFactService.getFinishedForDateRange(from, to);
     }
 
     @PostMapping
@@ -36,16 +40,42 @@ public class ExecutionFactController {
     }
 
     @PostMapping("/{executionFactId}")
-    public void testifyExecutionFact(@PathVariable UUID executionFactId, Authentication authentication) {
-        executionFactService.testifyExecutionFact(executionFactId, authentication);
+    public void finishExecution(@PathVariable UUID executionFactId) {
+        executionFactService.finishExecution(executionFactId);
     }
 
-    @GetMapping(params = {"from", "to", "participantId"})
-    public List<GetExecutionFactDTO> getForDateRangeForPerson(@RequestParam LocalDateTime from,
-                                                              @RequestParam(required = false) LocalDateTime to,
-                                                              @RequestParam UUID participantId
-                                                              ) {
-        return executionFactService.getForDateRangeForPerson(from, to, participantId);
+    @PostMapping("/{executionFactId}/testimonies")
+    public UUID testifyExecutionFact(@PathVariable UUID executionFactId, Authentication authentication) {
+        return testifyExecutionFact.testifyExecutionFact(executionFactId, authentication);
+    }
+
+    @GetMapping("/{executionFactId}/testimonies")
+    public List<GetTestimonyDTO> getTestimoniesForExecutionFact(@PathVariable UUID executionFactId,
+                                                                @RequestParam(required = false, defaultValue = "0")
+                                                                Integer page,
+                                                                @RequestParam(required = false, defaultValue = "200")
+                                                                Integer pageSize) {
+        return testifyExecutionFact.getTestimoniesForExecutionFact(executionFactId, page, pageSize);
+    }
+
+    @GetMapping(path = "/finished", params = {"from", "executorId"})
+    public List<GetExecutionFactDTO> getFinishedForDateRangeForExecutor(@RequestParam LocalDateTime from,
+                                                                        @RequestParam(required = false) LocalDateTime to,
+                                                                        @RequestParam UUID executorId) {
+        return executionFactService.getFinishedForDateRangeForParticipant(from, to, executorId);
+    }
+
+    @GetMapping(path = "/active", params = {"from"})
+    public List<GetExecutionFactDTO> getActiveForDateRange(@RequestParam LocalDateTime from,
+                                                           @RequestParam(required = false) LocalDateTime to) {
+        return executionFactService.getActiveForDateRange(from, to);
+    }
+
+    @GetMapping(path = "/active", params = {"from", "executorId"})
+    public List<GetExecutionFactDTO> getActiveForDateRangeForExecutor(@RequestParam LocalDateTime from,
+                                                                      @RequestParam(required = false) LocalDateTime to,
+                                                                      @RequestParam UUID executorId) {
+        return executionFactService.getActiveForDateRangeForParticipant(from, to, executorId);
     }
 
 

@@ -6,6 +6,7 @@ import java.util.Optional;
 
 public interface UserDetailsProvider <T extends UserDetails> {
 
+    //TODO refactor this so it returns GetParticipantDTO when security is done
     Optional<T> getUserByIdentifier(String identifier);
 
 }
