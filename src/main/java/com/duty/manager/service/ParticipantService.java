@@ -2,7 +2,6 @@ package com.duty.manager.service;
 
 import com.duty.manager.dto.GetParticipantDTO;
 import com.duty.manager.dto.RegisterParticipantDTO;
-import com.duty.manager.entity.Participant;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -13,7 +12,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Validated
-public interface ParticipantService extends UserDetailsProvider<Participant> {
+public interface ParticipantService {
 
     UUID registerParticipant(@Valid RegisterParticipantDTO registerParticipantDTO);
 

@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 @Service
 @RequiredArgsConstructor
@@ -38,7 +39,8 @@ public class TestimonyServiceImpl implements TestimonyService {
 
     @Override
     public UUID testifyExecutionFact(@NotNull UUID executionFactId, @NotNull Authentication authentication) {
-        UUID witnessId = participantRepository.findByEmail(authentication.getName()).orElseThrow().getId();
+        UUID witnessId = participantRepository.findByEmail(authentication.getName())
+                .orElseThrow(notFound(authentication.getName())).getId();
         checkIfExist(executionFactId);
         throwIfPersonAlreadyTestifiedFact(executionFactId, witnessId);
         return testimonyRepository.save(
@@ -48,6 +50,10 @@ public class TestimonyServiceImpl implements TestimonyService {
                         .withTimestamp(timeService.now())
                         .build()
         ).getId();
+    }
+
+    private Supplier<ServiceException> notFound(String identifier) {
+        return () -> new ServiceException("Participant with email %s not found".formatted(identifier));
     }
 
     private void checkIfExist(UUID executionFactId) {

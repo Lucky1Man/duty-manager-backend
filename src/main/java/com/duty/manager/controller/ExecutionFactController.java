@@ -73,14 +73,15 @@ public class ExecutionFactController {
 
     @PostMapping("/finished")
     @Operation(
-            description = "Sets finish time for execution fact with given id to current time."
+            description = "Sets finish time for execution fact with given id to current time." +
+                    " You can finish only your execution task, ADMIN can finish any."
     )
     @ApiResponse(
             responseCode = "200",
             description = "Finish time was set successfully"
     )
-    public void finishExecution(@RequestBody UUID executionFactId) {
-        executionFactService.finishExecution(executionFactId);
+    public void finishExecution(@RequestBody UUID executionFactId, Authentication authentication) {
+        executionFactService.finishExecution(executionFactId, authentication);
     }
 
     @PostMapping("/{executionFactId}/testimonies")

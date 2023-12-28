@@ -14,11 +14,11 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CredentialsService implements UserDetailsService {
 
-    private final List<UserDetailsProvider<UserDetails>> userDetailsProviders;
+    private final List<UserDetailsProvider<? extends UserDetails>> userDetailsProviders;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Optional<UserDetails> userDetails = userDetailsProviders.stream()
+        Optional<? extends UserDetails> userDetails = userDetailsProviders.stream()
                 .map(p -> p.getUserByIdentifier(email))
                 .filter(Optional::isPresent)
                 .findFirst()

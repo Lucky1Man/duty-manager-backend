@@ -5,6 +5,7 @@ import com.duty.manager.dto.RecordExecutionFactDTO;
 import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 
 import java.time.LocalDateTime;
@@ -21,7 +22,7 @@ public interface ExecutionFactService {
     List<GetExecutionFactDTO> getFinishedForDateRangeForParticipant(@NotNull LocalDateTime from, @Nullable LocalDateTime to,
                                                                     @NotNull UUID participantId);
 
-    void finishExecution(UUID id);
+    void finishExecution(UUID id, Authentication authentication);
 
     List<GetExecutionFactDTO> getActiveForDateRange(@NotNull LocalDateTime from, @Nullable LocalDateTime to);
 

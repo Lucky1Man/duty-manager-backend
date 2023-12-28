@@ -3,6 +3,7 @@ package com.duty.manager.service.impl;
 import com.duty.manager.dto.GetExecutionFactDTO;
 import com.duty.manager.dto.RecordExecutionFactDTO;
 import com.duty.manager.entity.ExecutionFact;
+import com.duty.manager.entity.Role;
 import com.duty.manager.repository.DutyRepository;
 import com.duty.manager.repository.ExecutionFactRepository;
 import com.duty.manager.repository.ParticipantRepository;
@@ -17,6 +18,8 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -88,8 +91,12 @@ public class ExecutionFactServiceImpl implements ExecutionFactService {
     }
 
     @Override
-    public void finishExecution(UUID id) {
+    public void finishExecution(UUID id, Authentication authentication) {
         ExecutionFact executionFact = getRawExecutionFact(id);
+        if(!authentication.getName().equals(executionFact.getExecutor().getEmail()) &&
+                !authentication.getAuthorities().contains(Role.ADMIN)) {
+            throw new ServiceException("You are not allowed to finish this execution fact", HttpStatus.FORBIDDEN);
+        }
         if(executionFact.getFinishTime() != null) {
             throw new ServiceException("Execution fact with id %s is already finished".formatted(id));
         }

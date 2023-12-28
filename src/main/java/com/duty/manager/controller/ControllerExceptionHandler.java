@@ -42,7 +42,7 @@ public class ControllerExceptionHandler {
             ServiceException e) {
         return ExceptionResponse.builder()
                 .withMessage(e.getMessage())
-                .withHttpStatus(HttpStatus.BAD_REQUEST)
+                .withHttpStatus(e.getStatusCode())
                 .withDate(LocalDateTime.now())
                 .build();
     }
