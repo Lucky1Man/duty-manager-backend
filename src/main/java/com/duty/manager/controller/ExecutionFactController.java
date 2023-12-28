@@ -38,10 +38,11 @@ public class ExecutionFactController {
     private final TestimonyService testifyExecutionFact;
 
     @GetMapping(path = "/finished", params = {"from"})
-    @Operation(description = "Returns execution facts based on specified date range, \"finish date\" is used for search")
+    @Operation(description = "Returns execution facts based on specified date range, \"finish date\" is used for search," +
+            "Default value for \"to\" is current day. The limit for maximal list size is 200")
     @ApiResponse(
             responseCode = "200",
-            description = "Default value for \"to\" is current day. The limit for maximal list size is 200",
+            description = "Retrieved",
             content = @Content(
                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                     array = @ArraySchema(
@@ -102,11 +103,11 @@ public class ExecutionFactController {
     }
 
     @GetMapping("/{executionFactId}/testimonies")
-    @Operation(description = "Returns testimonies for specified execution fact.")
+    @Operation(description = "Returns testimonies for specified execution fact.  Default value for \"page\" is 0,\n" +
+            "                     \"pageSize\" is 200. Min value for page is 0, Max value for page size is 200.")
     @ApiResponse(
             responseCode = "200",
-            description = "Returns testimonies for specified execution fact. Default value for \"page\" is 0," +
-                    " \"pageSize\" is 200. Min value for page is 0, Max value for page size is 200.",
+            description = "Returns testimonies for specified execution fact.",
             content = @Content(
                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                     array = @ArraySchema(
@@ -124,10 +125,11 @@ public class ExecutionFactController {
 
     @GetMapping(path = "/finished", params = {"from", "executorId"})
     @Operation(description = "Returns execution facts based on specified date range and for specific executor," +
-            " \"finish date\" is used for search")
+            " \"finish date\" is used for search, Default value for \"to\" is current day. The limit for maximal" +
+            " list size is 200")
     @ApiResponse(
             responseCode = "200",
-            description = "Default value for \"to\" is current day. The limit for maximal list size is 200",
+            description = "Retrieved",
             content = @Content(
                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                     array = @ArraySchema(
@@ -143,10 +145,11 @@ public class ExecutionFactController {
 
     @GetMapping(path = "/active", params = {"from"})
     @Operation(description = "Returns execution facts based on specified date range," +
-            " \"start date\" is used for search, ignores all records that have \"finish time\"")
+            " \"start date\" is used for search, ignores all records that have \"finish time\", Default value for \"to\"" +
+            " is current day. The limit for maximal list size is 200")
     @ApiResponse(
             responseCode = "200",
-            description = "Default value for \"to\" is current day. The limit for maximal list size is 200",
+            description = "Retrieved",
             content = @Content(
                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                     array = @ArraySchema(
@@ -161,10 +164,11 @@ public class ExecutionFactController {
 
     @GetMapping(path = "/active", params = {"from", "executorId"})
     @Operation(description = "Returns execution facts based on specified date range and for specific executor," +
-            " \"start date\" is used for search, ignores all records that have \"finish time\"")
+            " \"start date\" is used for search, ignores all records that have \"finish time\", Default value for \"to\"" +
+            " is current day. The limit for maximal list size is 200")
     @ApiResponse(
             responseCode = "200",
-            description = "Default value for \"to\" is current day. The limit for maximal list size is 200",
+            description = "Retrieved",
             content = @Content(
                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                     array = @ArraySchema(
