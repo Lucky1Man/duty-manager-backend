@@ -1,5 +1,6 @@
 package com.duty.manager.dto;
 
+import com.duty.manager.entity.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,11 +12,13 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class GetParticipantDTO {
+public class GetParticipantDTO  {
 
     private UUID id;
 
     private String fullName;
 
     private String email;
+
+    private Role role;
 }

@@ -1,6 +1,7 @@
 package com.duty.manager.controller;
 
 import com.duty.manager.service.ServiceException;
+import io.jsonwebtoken.ClaimJwtException;
 import lombok.Generated;
 import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.http.HttpStatus;
@@ -58,5 +59,15 @@ public class ControllerExceptionHandler {
                 .build();
     }
 
+    @ExceptionHandler(ClaimJwtException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ExceptionResponse handleConversionFailedException(
+            ClaimJwtException e) {
+        return ExceptionResponse.builder()
+                .withMessage(e.getMessage())
+                .withHttpStatus(HttpStatus.BAD_REQUEST)
+                .withDate(LocalDateTime.now())
+                .build();
+    }
 
 }

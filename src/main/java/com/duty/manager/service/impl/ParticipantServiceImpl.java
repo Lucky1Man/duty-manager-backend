@@ -3,7 +3,9 @@ package com.duty.manager.service.impl;
 import com.duty.manager.dto.GetParticipantDTO;
 import com.duty.manager.dto.RegisterParticipantDTO;
 import com.duty.manager.entity.Participant;
+import com.duty.manager.entity.Role;
 import com.duty.manager.repository.ParticipantRepository;
+import com.duty.manager.repository.RoleRepository;
 import com.duty.manager.service.ParticipantService;
 import com.duty.manager.service.ServiceException;
 import com.duty.manager.service.UserDetailsProvider;
@@ -28,16 +30,17 @@ import java.util.function.Supplier;
 public class ParticipantServiceImpl implements ParticipantService, UserDetailsProvider<Participant> {
 
     private final ParticipantRepository participantRepository;
-
     private final ModelMapper modelMapper;
-
     private final PasswordEncoder passwordEncoder;
+    private final RoleRepository roleRepository;
 
     @Override
     public UUID registerParticipant(RegisterParticipantDTO registerParticipantDTO) {
         throwExceptionIfEmailIsTaken(registerParticipantDTO);
         Participant newParticipant = modelMapper.map(registerParticipantDTO, Participant.class);
         newParticipant.setPassword(passwordEncoder.encode(newParticipant.getPassword()));
+        newParticipant.setRole(roleRepository.findByName(Role.PARTICIPANT.getName())
+                .orElseThrow(()->new ServiceException("Roles are not configured in the database")));
         return participantRepository.saveAndFlush(newParticipant).getId();
     }
 

@@ -7,3 +7,8 @@ spring:
     url: jdbc:postgresql://localhost:5432/${DB_NAME}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
+application:
+  security:
+    jwt:
+      secret-key: ${JWT_KEY}
+      expiration: 3600000

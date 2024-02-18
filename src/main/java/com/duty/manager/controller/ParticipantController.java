@@ -5,6 +5,8 @@ import com.duty.manager.dto.GetParticipantDTO;
 import com.duty.manager.dto.RegisterParticipantDTO;
 import com.duty.manager.service.ParticipantService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -71,7 +73,10 @@ public class ParticipantController {
     }
 
     @GetMapping
-    @Operation(description = "Returns list of registered participants")
+    @Operation(
+            description = "Returns list of registered participants",
+            parameters = @Parameter(name = "Authorization", in = ParameterIn.HEADER, required = true)
+    )
     @ApiResponse(
             responseCode = "200",
             description = "You are allowed to get this list, defaults: page = 0, pageSize = 200," +
