@@ -1,5 +1,7 @@
 package com.duty.manager.service.impl;
 
+import com.duty.manager.dto.GetParticipantDTO;
+import com.duty.manager.service.ParticipantService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -22,9 +24,13 @@ public class JwtService {
 
     private final Long expirationTime;
 
-    public JwtService(@Qualifier("jwtKey") String jwtKey, @Qualifier("expirationTime") Long expirationTime) {
+    private final ParticipantService participantService;
+
+    public JwtService(@Qualifier("jwtKey") String jwtKey, @Qualifier("expirationTime") Long expirationTime,
+                      ParticipantService participantService) {
         this.jwtKey = jwtKey;
         this.expirationTime = expirationTime;
+        this.participantService = participantService;
     }
 
     public String extractUserName(String token) {
@@ -36,17 +42,20 @@ public class JwtService {
         return claimResolver.apply(claims);
     }
 
-    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-        return Jwts.builder()
+    public GetParticipantDTO generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+        GetParticipantDTO participant = participantService.getParticipant(userDetails.getUsername());
+        String jwt = Jwts.builder()
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
+        participant.setJwt(jwt);
+        return participant;
     }
 
-    public String generateToken(UserDetails userDetails) {
+    public GetParticipantDTO generateToken(UserDetails userDetails) {
         return generateToken(new HashMap<>(), userDetails);
     }
 

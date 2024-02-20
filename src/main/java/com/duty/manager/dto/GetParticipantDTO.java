@@ -21,4 +21,6 @@ public class GetParticipantDTO  {
     private String email;
 
     private Role role;
+
+    private String jwt;
 }

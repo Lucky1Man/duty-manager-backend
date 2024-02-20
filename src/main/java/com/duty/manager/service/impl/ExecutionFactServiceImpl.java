@@ -2,6 +2,7 @@ package com.duty.manager.service.impl;
 
 import com.duty.manager.dto.GetExecutionFactDTO;
 import com.duty.manager.dto.RecordExecutionFactDTO;
+import com.duty.manager.entity.Duty;
 import com.duty.manager.entity.ExecutionFact;
 import com.duty.manager.entity.Role;
 import com.duty.manager.repository.DutyRepository;
@@ -76,7 +77,13 @@ public class ExecutionFactServiceImpl implements ExecutionFactService {
     public UUID recordExecutionFact(RecordExecutionFactDTO factDTO) {
         ExecutionFact fact = modelMapper.map(factDTO, ExecutionFact.class);
         fact.setStartTime(timeService.now());
-        fact.setDuty(dutyRepository.getReferenceById(fact.getDuty().getId()));
+        if (factDTO.getDutyId() != null) {
+            Duty duty = dutyRepository.getReferenceById(fact.getDuty().getId());
+            fact.setDuty(duty);
+            if (factDTO.getDescription() == null) {
+                fact.setDescription(duty.getDescription());
+            }
+        }
         fact.setExecutor(participantRepository.getReferenceById(fact.getExecutor().getId()));
         return executionFactRepository.save(fact).getId();
     }
@@ -93,11 +100,11 @@ public class ExecutionFactServiceImpl implements ExecutionFactService {
     @Override
     public void finishExecution(UUID id, Authentication authentication) {
         ExecutionFact executionFact = getRawExecutionFact(id);
-        if(!authentication.getName().equals(executionFact.getExecutor().getEmail()) &&
+        if (!authentication.getName().equals(executionFact.getExecutor().getEmail()) &&
                 !authentication.getAuthorities().contains(Role.ADMIN)) {
             throw new ServiceException("You are not allowed to finish this execution fact", HttpStatus.FORBIDDEN);
         }
-        if(executionFact.getFinishTime() != null) {
+        if (executionFact.getFinishTime() != null) {
             throw new ServiceException("Execution fact with id %s is already finished".formatted(id));
         }
         executionFact.setFinishTime(timeService.now());

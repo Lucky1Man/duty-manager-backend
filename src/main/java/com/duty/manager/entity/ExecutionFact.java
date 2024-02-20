@@ -1,9 +1,7 @@
 package com.duty.manager.entity;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -37,7 +35,7 @@ public class ExecutionFact {
 
     @Id
     @GeneratedValue
-    @Column(name = "id", nullable = false, columnDefinition="uuid")
+    @Column(name = "id", nullable = false, columnDefinition = "uuid")
     private UUID id;
 
     @Column(
@@ -53,14 +51,20 @@ public class ExecutionFact {
     private LocalDateTime finishTime;
 
     @NotNull(message = "Execution fact must have executor")
-    @OneToOne(optional = false, fetch = FetchType.LAZY, cascade = {CascadeType.MERGE})
+    @OneToOne(optional = false)
     @JoinColumn(name = "executor_id", referencedColumnName = "id", nullable = false)
     private Participant executor;
 
-    @NotNull(message = "Execution fact must have duty")
-    @OneToOne(optional = false, cascade = {CascadeType.MERGE})
-    @JoinColumn(name = "duty_id", referencedColumnName = "id", nullable = false)
+    @OneToOne
+    @JoinColumn(name = "duty_id", referencedColumnName = "id")
     private Duty duty;
+
+    @NotNull(message = "Description must be present.")
+    @Column(
+            name = "description",
+            nullable = false
+    )
+    private String description;
 
     @OneToMany(mappedBy = "executionFact")
     private Set<Testimony> testimonies;

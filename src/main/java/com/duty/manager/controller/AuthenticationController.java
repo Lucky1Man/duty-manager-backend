@@ -1,6 +1,7 @@
 package com.duty.manager.controller;
 
-import com.duty.manager.dto.AuthenticationRequestDto;
+import com.duty.manager.dto.AuthenticationRequestDTO;
+import com.duty.manager.dto.GetParticipantDTO;
 import com.duty.manager.service.impl.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,7 @@ public class AuthenticationController {
     private final JwtService jwtService;
 
     @PostMapping("/jwt")
-    public ResponseEntity<String> login(@RequestBody AuthenticationRequestDto authenticationRequest) {
+    public ResponseEntity<GetParticipantDTO> login(@RequestBody AuthenticationRequestDTO authenticationRequest) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         authenticationRequest.getEmail(),
