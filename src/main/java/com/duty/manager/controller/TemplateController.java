@@ -1,7 +1,7 @@
 package com.duty.manager.controller;
 
 import com.duty.manager.dto.CreateTemplateDTO;
-import com.duty.manager.dto.GetDutyDTO;
+import com.duty.manager.dto.GetTemplateDTO;
 import com.duty.manager.dto.UpdateTemplateDTO;
 import com.duty.manager.service.TemplateService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,60 +29,60 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/duties")
-public class DutyController {
+@RequestMapping("/api/v1/templates")
+public class TemplateController {
 
     private final TemplateService templateService;
 
     @GetMapping
-    @Operation(description = "Returns duties at specified page with specified page size. Page count starts from 0.")
+    @Operation(description = "Returns templates at specified page with specified page size. Page count starts from 0.")
     @ApiResponse(
             responseCode = "200",
-            description = "Returns duties that are at specified page with specified page size",
+            description = "Returns templates that are at specified page with specified page size",
             content = @Content(
                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                     array = @ArraySchema(
-                            schema = @Schema(implementation = GetDutyDTO.class)
+                            schema = @Schema(implementation = GetTemplateDTO.class)
                     )
             )
     )
-    public List<GetDutyDTO> getDuties(@RequestParam(required = false, defaultValue = "0")
+    public List<GetTemplateDTO> getTemplates(@RequestParam(required = false, defaultValue = "0")
                                    Integer page,
                                    @RequestParam(required = false, defaultValue = "50")
                                    Integer pageSize) {
         return templateService.getTemplates(page, pageSize);
     }
 
-    @GetMapping("/{dutyIdentifier}")
-    @Operation(description = "Returns duty by specified id or name. Returns 404 if no duty was found")
+    @GetMapping("/{templateIdentifier}")
+    @Operation(description = "Returns template by specified id or name. Returns 404 if no template was found")
     @ApiResponse(
             responseCode = "200",
-            description = "Returns duty with specified duty id or duty name",
+            description = "Returns template with specified template id or template name",
             content = @Content(
                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    schema = @Schema(implementation = GetDutyDTO.class)
+                    schema = @Schema(implementation = GetTemplateDTO.class)
             )
     )
     @ApiResponse(
             responseCode = "404",
-            description = "Duty with specified duty id or duty name was not found",
+            description = "Template with specified template id or template name was not found",
             content = @Content(
                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                     schema = @Schema(implementation = ExceptionResponse.class)
             )
     )
-    public GetDutyDTO getDuty(@PathVariable String dutyIdentifier) {
-        return templateService.getTemplates(dutyIdentifier);
+    public GetTemplateDTO getTemplate(@PathVariable String templateIdentifier) {
+        return templateService.getTemplates(templateIdentifier);
     }
 
     @PostMapping
     @Operation(
-            description = "Adds given duty to database. Returns 400 if duty with given name already exists"
+            description = "Adds given template to database. Returns 400 if template with given name already exists"
     )
     @ResponseStatus(HttpStatus.CREATED)
     @ApiResponse(
             responseCode = "201",
-            description = "Returns id of duty that was added",
+            description = "Returns id of template that was added",
             content = @Content(
                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                     schema = @Schema(implementation = UUID.class)
@@ -96,41 +96,41 @@ public class DutyController {
                     schema = @Schema(implementation = ExceptionResponse.class)
             )
     )
-    public ResponseEntity<UUID> addDuty(@RequestBody CreateTemplateDTO addDutyDto) {
-        return ResponseEntity.status(HttpStatus.CREATED.value()).body(templateService.createTemplate(addDutyDto));
+    public ResponseEntity<UUID> addTemplate(@RequestBody CreateTemplateDTO addTemplateDto) {
+        return ResponseEntity.status(HttpStatus.CREATED.value()).body(templateService.createTemplate(addTemplateDto));
     }
 
-    @PutMapping("/{dutyIdentifier}")
+    @PutMapping("/{templateIdentifier}")
     @Operation(
-            description = "Updates duty with given identifier with data from UpdateDutyDTO." +
-                    " If UpdateDutyDTO has null fields then that specific field will not be effected"
+            description = "Updates template with given identifier with data from UpdateTemplateDTO." +
+                    " If UpdateTemplateDTO has null fields then that specific field will not be effected"
     )
     @ApiResponse(
             responseCode = "200",
-            description = "Means that duty was updated and all given parameters were changed"
+            description = "Means that template was updated and all given parameters were changed"
     )
-    public void updateDuty(@PathVariable String dutyIdentifier, @RequestBody UpdateTemplateDTO updateTemplateDTO) {
-        templateService.updateTemplates(dutyIdentifier, updateTemplateDTO);
+    public void updateTemplate(@PathVariable String templateIdentifier, @RequestBody UpdateTemplateDTO updateTemplateDTO) {
+        templateService.updateTemplates(templateIdentifier, updateTemplateDTO);
     }
 
-    @DeleteMapping("/{dutyIdentifier}")
+    @DeleteMapping("/{templateIdentifier}")
     @Operation(
-            description = "Deletes duty with given identifier"
+            description = "Deletes template with given identifier"
     )
     @ApiResponse(
             responseCode = "200",
-            description = "Means that duty was deleted"
+            description = "Means that template was deleted"
     )
     @ApiResponse(
             responseCode = "400",
-            description = "Means that duty with given identifier does not exist",
+            description = "Means that template with given identifier does not exist",
             content = @Content(
                     mediaType = MediaType.APPLICATION_JSON_VALUE,
                     schema = @Schema(implementation = ExceptionResponse.class)
             )
     )
-    public void deleteDuty(@PathVariable String dutyIdentifier) {
-        templateService.deleteTemplates(dutyIdentifier);
+    public void deleteTemplate(@PathVariable String templateIdentifier) {
+        templateService.deleteTemplates(templateIdentifier);
     }
 
 }

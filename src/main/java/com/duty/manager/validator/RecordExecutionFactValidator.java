@@ -4,11 +4,11 @@ import com.duty.manager.dto.RecordExecutionFactDTO;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-public class RecordExecutionFactValidator implements ConstraintValidator<DescriptionOrDutyIdMustBePresent,
+public class RecordExecutionFactValidator implements ConstraintValidator<DescriptionOrTemplateIdMustBePresent,
         RecordExecutionFactDTO> {
     @Override
     public boolean isValid(RecordExecutionFactDTO recordExecutionFactDTO,
                            ConstraintValidatorContext constraintValidatorContext) {
-        return recordExecutionFactDTO.getDutyId() != null || recordExecutionFactDTO.getDescription() != null;
+        return recordExecutionFactDTO.getTemplateId() != null || recordExecutionFactDTO.getDescription() != null;
     }
 }

@@ -56,7 +56,7 @@ public class ExecutionFact {
     private Participant executor;
 
     @ManyToOne
-    @JoinColumn(name = "duty_id", referencedColumnName = "id")
+    @JoinColumn(name = "template_id", referencedColumnName = "id")
     private Template template;
 
     @NotNull(message = "Description must be present.")

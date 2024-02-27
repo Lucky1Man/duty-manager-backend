@@ -26,7 +26,7 @@ public class GetExecutionFactDTO {
 
     private UUID executorId;
 
-    private String dutyName;
+    private String templateName;
 
     private List<GetTestimonyDTO> testimonies;
 

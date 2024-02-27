@@ -78,7 +78,7 @@ public class TestimonyServiceImpl implements TestimonyService {
 
     private GetTestimonyDTO mapToGetDTO(Testimony t) {
         GetTestimonyDTO getDTO = modelMapper.map(t, GetTestimonyDTO.class);
-        getDTO.setDutyName(t.getExecutionFact().getTemplate().getName());
+        getDTO.setTemplateName(t.getExecutionFact().getTemplate().getName());
         return getDTO;
     }
 

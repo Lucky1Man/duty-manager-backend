@@ -1,7 +1,7 @@
 package com.duty.manager.service;
 
 import com.duty.manager.dto.CreateTemplateDTO;
-import com.duty.manager.dto.GetDutyDTO;
+import com.duty.manager.dto.GetTemplateDTO;
 import com.duty.manager.dto.UpdateTemplateDTO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
@@ -15,11 +15,11 @@ import java.util.UUID;
 @Validated
 public interface TemplateService {
 
-    UUID createTemplate(@Valid CreateTemplateDTO dutyDTO);
+    UUID createTemplate(@Valid CreateTemplateDTO templateDTO);
 
-    List<GetDutyDTO> getTemplates(@NotNull @Min(0) Integer page, @Max(50) @NotNull Integer pageSize);
+    List<GetTemplateDTO> getTemplates(@NotNull @Min(0) Integer page, @Max(50) @NotNull Integer pageSize);
 
-    GetDutyDTO getTemplates(@NotNull String identifier);
+    GetTemplateDTO getTemplates(@NotNull String identifier);
 
     void updateTemplates(@NotNull String identifier, @Valid UpdateTemplateDTO updateTemplateDTO);
 

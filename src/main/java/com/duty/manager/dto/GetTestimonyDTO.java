@@ -20,7 +20,7 @@ public class GetTestimonyDTO {
 
     private UUID executionFactId;
 
-    private String dutyName;
+    private String templateName;
 
     private LocalDateTime timestamp;
 }

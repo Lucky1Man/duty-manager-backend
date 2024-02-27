@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface DutyRepository extends JpaRepository<Template, UUID> {
+public interface TemplateRepository extends JpaRepository<Template, UUID> {
 
     Optional<Template> findByName(String name);
 

@@ -5,7 +5,7 @@ import com.duty.manager.dto.RecordExecutionFactDTO;
 import com.duty.manager.entity.Template;
 import com.duty.manager.entity.ExecutionFact;
 import com.duty.manager.entity.Role;
-import com.duty.manager.repository.DutyRepository;
+import com.duty.manager.repository.TemplateRepository;
 import com.duty.manager.repository.ExecutionFactRepository;
 import com.duty.manager.repository.ParticipantRepository;
 import com.duty.manager.service.ExecutionFactService;
@@ -42,7 +42,7 @@ public class ExecutionFactServiceImpl implements ExecutionFactService {
 
     private final ModelMapper modelMapper;
 
-    private final DutyRepository dutyRepository;
+    private final TemplateRepository templateRepository;
 
     private final ParticipantRepository participantRepository;
 
@@ -69,7 +69,7 @@ public class ExecutionFactServiceImpl implements ExecutionFactService {
 
     private GetExecutionFactDTO mapEntityToGetDTO(ExecutionFact fact) {
         GetExecutionFactDTO getDTO = modelMapper.map(fact, GetExecutionFactDTO.class);
-        getDTO.getTestimonies().forEach(t -> t.setDutyName(getDTO.getDutyName()));
+        getDTO.getTestimonies().forEach(t -> t.setTemplateName(getDTO.getTemplateName()));
         return getDTO;
     }
 
@@ -77,8 +77,8 @@ public class ExecutionFactServiceImpl implements ExecutionFactService {
     public UUID recordExecutionFact(RecordExecutionFactDTO factDTO) {
         ExecutionFact fact = modelMapper.map(factDTO, ExecutionFact.class);
         fact.setStartTime(timeService.now());
-        if (factDTO.getDutyId() != null) {
-            Template template = dutyRepository.getReferenceById(fact.getTemplate().getId());
+        if (factDTO.getTemplateId() != null) {
+            Template template = templateRepository.getReferenceById(fact.getTemplate().getId());
             fact.setTemplate(template);
             if (factDTO.getDescription() == null) {
                 fact.setDescription(template.getDescription());

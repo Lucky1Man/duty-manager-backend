@@ -11,7 +11,7 @@ import org.hibernate.validator.constraints.Length;
 @AllArgsConstructor
 public class CreateTemplateDTO {
     @Length(min = 1, max = 100)
-    @NotNull(message = "Duty must have name")
+    @NotNull(message = "Template must have name")
     private String name;
 
     @Length(min = 1, max = 500)

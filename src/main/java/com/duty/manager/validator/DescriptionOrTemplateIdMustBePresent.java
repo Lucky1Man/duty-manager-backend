@@ -13,9 +13,9 @@ import java.lang.annotation.Target;
 @Constraint(validatedBy = RecordExecutionFactValidator.class)
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface DescriptionOrDutyIdMustBePresent {
+public @interface DescriptionOrTemplateIdMustBePresent {
 
-    String message() default "You must provide either description for execution fact or duty id.";
+    String message() default "You must provide either description for execution fact or template id.";
 
     Class<?>[] groups() default {};
 

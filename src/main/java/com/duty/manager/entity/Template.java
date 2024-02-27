@@ -45,7 +45,7 @@ public class Template {
             columnDefinition = "varchar(100)"
     )
     @Length(min = 1, max = 100)
-    @NotNull(message = "Duty must have name")
+    @NotNull(message = "Template must have name")
     private String name;
 
     @Column(
