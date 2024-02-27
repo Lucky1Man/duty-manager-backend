@@ -1,11 +1,11 @@
 package com.duty.manager.service.impl;
 
-import com.duty.manager.dto.CreateDutyDTO;
+import com.duty.manager.dto.CreateTemplateDTO;
 import com.duty.manager.dto.GetDutyDTO;
-import com.duty.manager.dto.UpdateDutyDTO;
-import com.duty.manager.entity.Duty;
+import com.duty.manager.dto.UpdateTemplateDTO;
+import com.duty.manager.entity.Template;
 import com.duty.manager.repository.DutyRepository;
-import com.duty.manager.service.DutyService;
+import com.duty.manager.service.TemplateService;
 import com.duty.manager.service.ServiceException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -24,23 +24,23 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class DutyServiceImpl implements DutyService {
+public class TemplateServiceImpl implements TemplateService {
 
     private final DutyRepository dutyRepository;
 
     private final ModelMapper modelMapper;
 
     @Override
-    public UUID createDuty(CreateDutyDTO dutyDTO) {
+    public UUID createTemplate(CreateTemplateDTO dutyDTO) {
         throwExceptionIfExist(dutyDTO);
-        Duty duty = modelMapper.map(dutyDTO, Duty.class);
-        return dutyRepository.save(duty).getId();
+        Template template = modelMapper.map(dutyDTO, Template.class);
+        return dutyRepository.save(template).getId();
     }
 
-    private void throwExceptionIfExist(CreateDutyDTO dutyDTO) {
+    private void throwExceptionIfExist(CreateTemplateDTO dutyDTO) {
         String name = dutyDTO.getName();
         try {
-            getDuty(name);
+            getTemplates(name);
             throw new IllegalArgumentException(
                     "Duty with name %s already exists".formatted(name)
             );
@@ -49,22 +49,22 @@ public class DutyServiceImpl implements DutyService {
     }
 
     @Override
-    public List<GetDutyDTO> getDuties(@NotNull @Min(0) Integer page, @Max(50) @NotNull Integer pageSize) {
+    public List<GetDutyDTO> getTemplates(@NotNull @Min(0) Integer page, @Max(50) @NotNull Integer pageSize) {
         return dutyRepository.findAll(PageRequest.of(page, pageSize)).get()
                 .map(this::dutyEntityToGetDTO).toList();
     }
 
-    private GetDutyDTO dutyEntityToGetDTO(Duty duty) {
-        return modelMapper.map(duty, GetDutyDTO.class);
+    private GetDutyDTO dutyEntityToGetDTO(Template template) {
+        return modelMapper.map(template, GetDutyDTO.class);
     }
 
     @Override
-    public GetDutyDTO getDuty(@NotNull String identifier) {
+    public GetDutyDTO getTemplates(@NotNull String identifier) {
         return dutyEntityToGetDTO(getRowDuty(identifier));
     }
 
-    private Duty getRowDuty(String identifier) {
-        Optional<Duty> duty;
+    private Template getRowDuty(String identifier) {
+        Optional<Template> duty;
         try {
             duty = dutyRepository.findById(UUID.fromString(identifier));
         } catch (IllegalArgumentException e) {
@@ -76,22 +76,22 @@ public class DutyServiceImpl implements DutyService {
     }
 
     @Override
-    public void updateDuty(@NotNull String identifier, @Valid UpdateDutyDTO dutyUpdates) {
-        Duty duty = getRowDuty(identifier);
+    public void updateTemplates(@NotNull String identifier, @Valid UpdateTemplateDTO dutyUpdates) {
+        Template template = getRowDuty(identifier);
         if (dutyUpdates.getName() != null && dutyRepository.findByName(dutyUpdates.getName()).isEmpty()) {
-            duty.setName(dutyUpdates.getName());
+            template.setName(dutyUpdates.getName());
         }
         if (dutyUpdates.getDescription() != null) {
-            duty.setDescription(dutyUpdates.getDescription());
+            template.setDescription(dutyUpdates.getDescription());
         }
         dutyRepository.flush();
     }
 
     @Override
-    public void deleteDuty(@NotNull String identifier) {
+    public void deleteTemplates(@NotNull String identifier) {
         try {
-            Duty duty = getRowDuty(identifier);
-            dutyRepository.delete(duty);
+            Template template = getRowDuty(identifier);
+            dutyRepository.delete(template);
             dutyRepository.flush();
         } catch (Exception e) {
             throw new ServiceException(e.getMessage());

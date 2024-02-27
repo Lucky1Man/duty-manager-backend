@@ -5,8 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import jakarta.validation.constraints.NotNull;
@@ -51,13 +51,13 @@ public class ExecutionFact {
     private LocalDateTime finishTime;
 
     @NotNull(message = "Execution fact must have executor")
-    @OneToOne(optional = false)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "executor_id", referencedColumnName = "id", nullable = false)
     private Participant executor;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "duty_id", referencedColumnName = "id")
-    private Duty duty;
+    private Template template;
 
     @NotNull(message = "Description must be present.")
     @Column(

@@ -8,7 +8,7 @@ import org.hibernate.validator.constraints.Length;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdateDutyDTO {
+public class UpdateTemplateDTO {
 
     @Length(min = 1, max = 100)
     private String name;

@@ -30,4 +30,6 @@ public class GetExecutionFactDTO {
 
     private List<GetTestimonyDTO> testimonies;
 
+    private String description;
+
 }

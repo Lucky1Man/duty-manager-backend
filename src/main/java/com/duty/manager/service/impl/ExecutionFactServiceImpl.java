@@ -2,7 +2,7 @@ package com.duty.manager.service.impl;
 
 import com.duty.manager.dto.GetExecutionFactDTO;
 import com.duty.manager.dto.RecordExecutionFactDTO;
-import com.duty.manager.entity.Duty;
+import com.duty.manager.entity.Template;
 import com.duty.manager.entity.ExecutionFact;
 import com.duty.manager.entity.Role;
 import com.duty.manager.repository.DutyRepository;
@@ -78,10 +78,10 @@ public class ExecutionFactServiceImpl implements ExecutionFactService {
         ExecutionFact fact = modelMapper.map(factDTO, ExecutionFact.class);
         fact.setStartTime(timeService.now());
         if (factDTO.getDutyId() != null) {
-            Duty duty = dutyRepository.getReferenceById(fact.getDuty().getId());
-            fact.setDuty(duty);
+            Template template = dutyRepository.getReferenceById(fact.getTemplate().getId());
+            fact.setTemplate(template);
             if (factDTO.getDescription() == null) {
-                fact.setDescription(duty.getDescription());
+                fact.setDescription(template.getDescription());
             }
         }
         fact.setExecutor(participantRepository.getReferenceById(fact.getExecutor().getId()));

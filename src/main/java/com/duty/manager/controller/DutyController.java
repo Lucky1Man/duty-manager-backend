@@ -1,9 +1,9 @@
 package com.duty.manager.controller;
 
-import com.duty.manager.dto.CreateDutyDTO;
+import com.duty.manager.dto.CreateTemplateDTO;
 import com.duty.manager.dto.GetDutyDTO;
-import com.duty.manager.dto.UpdateDutyDTO;
-import com.duty.manager.service.DutyService;
+import com.duty.manager.dto.UpdateTemplateDTO;
+import com.duty.manager.service.TemplateService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -32,7 +32,7 @@ import java.util.UUID;
 @RequestMapping("/api/v1/duties")
 public class DutyController {
 
-    private final DutyService dutyService;
+    private final TemplateService templateService;
 
     @GetMapping
     @Operation(description = "Returns duties at specified page with specified page size. Page count starts from 0.")
@@ -50,7 +50,7 @@ public class DutyController {
                                    Integer page,
                                    @RequestParam(required = false, defaultValue = "50")
                                    Integer pageSize) {
-        return dutyService.getDuties(page, pageSize);
+        return templateService.getTemplates(page, pageSize);
     }
 
     @GetMapping("/{dutyIdentifier}")
@@ -72,7 +72,7 @@ public class DutyController {
             )
     )
     public GetDutyDTO getDuty(@PathVariable String dutyIdentifier) {
-        return dutyService.getDuty(dutyIdentifier);
+        return templateService.getTemplates(dutyIdentifier);
     }
 
     @PostMapping
@@ -96,8 +96,8 @@ public class DutyController {
                     schema = @Schema(implementation = ExceptionResponse.class)
             )
     )
-    public ResponseEntity<UUID> addDuty(@RequestBody CreateDutyDTO addDutyDto) {
-        return ResponseEntity.status(HttpStatus.CREATED.value()).body(dutyService.createDuty(addDutyDto));
+    public ResponseEntity<UUID> addDuty(@RequestBody CreateTemplateDTO addDutyDto) {
+        return ResponseEntity.status(HttpStatus.CREATED.value()).body(templateService.createTemplate(addDutyDto));
     }
 
     @PutMapping("/{dutyIdentifier}")
@@ -109,8 +109,8 @@ public class DutyController {
             responseCode = "200",
             description = "Means that duty was updated and all given parameters were changed"
     )
-    public void updateDuty(@PathVariable String dutyIdentifier, @RequestBody UpdateDutyDTO updateDutyDTO) {
-        dutyService.updateDuty(dutyIdentifier, updateDutyDTO);
+    public void updateDuty(@PathVariable String dutyIdentifier, @RequestBody UpdateTemplateDTO updateTemplateDTO) {
+        templateService.updateTemplates(dutyIdentifier, updateTemplateDTO);
     }
 
     @DeleteMapping("/{dutyIdentifier}")
@@ -130,7 +130,7 @@ public class DutyController {
             )
     )
     public void deleteDuty(@PathVariable String dutyIdentifier) {
-        dutyService.deleteDuty(dutyIdentifier);
+        templateService.deleteTemplates(dutyIdentifier);
     }
 
 }

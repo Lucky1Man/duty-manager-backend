@@ -19,11 +19,11 @@ import org.hibernate.validator.constraints.Length;
 import java.util.Objects;
 import java.util.UUID;
 
-@Entity(name = "Duty")
+@Entity(name = "Template")
 @Table(
-        name = "duties",
+        name = "templates",
         uniqueConstraints = @UniqueConstraint(
-                name = "duties_name_key",
+                name = "templates_name_key",
                 columnNames = "name"
         )
 )
@@ -33,7 +33,7 @@ import java.util.UUID;
 @Builder(setterPrefix = "with")
 @NoArgsConstructor
 @AllArgsConstructor
-public class Duty {
+public class Template {
     @Id
     @GeneratedValue
     @Column(name = "id", nullable = false, columnDefinition="uuid")
@@ -62,8 +62,8 @@ public class Duty {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Duty duty = (Duty) o;
-        return Objects.equals(id, duty.id) && Objects.equals(name, duty.name);
+        Template template = (Template) o;
+        return Objects.equals(id, template.id) && Objects.equals(name, template.name);
     }
 
     @Override
