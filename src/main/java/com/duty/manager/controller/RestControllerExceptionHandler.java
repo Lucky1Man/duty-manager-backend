@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 
 @RestControllerAdvice
 @Generated
-public class ControllerExceptionHandler {
+public class RestControllerExceptionHandler {
 
     @ExceptionHandler(jakarta.validation.ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -62,12 +62,12 @@ public class ControllerExceptionHandler {
     }
 
     @ExceptionHandler(ExpiredJwtException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
     public ExceptionResponse handleConversionFailedException(
             ExpiredJwtException e) {
         return ExceptionResponse.builder()
-                .withMessage(e.getMessage())
-                .withHttpStatus(HttpStatus.BAD_REQUEST)
+                .withMessage("Your session expired.")
+                .withHttpStatus(HttpStatus.FORBIDDEN)
                 .withDate(LocalDateTime.now())
                 .build();
     }

@@ -53,16 +53,21 @@ public class ExecutionFactServiceImpl implements ExecutionFactService {
 
     @Override
     public List<GetExecutionFactDTO> getFinishedForDateRange(@NotNull LocalDateTime from, @Nullable LocalDateTime to) {
-        return getExecutionFactDTOS(to, (notNullTo, pageSize) -> executionFactRepository
-                .getAllFinishedInRange(from, notNullTo, pageSize)
-        );
+        return getExecutionFactDTOS(from, to, executionFactRepository::getAllFinishedInRange);
     }
 
-    private List<GetExecutionFactDTO> getExecutionFactDTOS(LocalDateTime to, BiFunction<LocalDateTime, Pageable, List<ExecutionFact>> factSupplier) {
+    private List<GetExecutionFactDTO> getExecutionFactDTOS(LocalDateTime from, LocalDateTime to,
+                                                           TripletFunction<LocalDateTime,
+                                                                   LocalDateTime,
+                                                                   Pageable,
+                                                                   List<ExecutionFact>> factSupplier) {
         if (to == null) {
             to = timeService.now();
         }
-        return factSupplier.apply(to, PageRequest.ofSize(MAXIMAL_PAGE_SIZE)).stream()
+        if (from.isAfter(to) || from.isAfter(timeService.now())) {
+            throw new ServiceException("From date can not be after to date, or from date can not be in the future");
+        }
+        return factSupplier.apply(from, to, PageRequest.ofSize(MAXIMAL_PAGE_SIZE)).stream()
                 .map(this::mapEntityToGetDTO)
                 .toList();
     }
@@ -92,8 +97,8 @@ public class ExecutionFactServiceImpl implements ExecutionFactService {
     public List<GetExecutionFactDTO> getFinishedForDateRangeForParticipant(@NotNull LocalDateTime from,
                                                                            @Nullable LocalDateTime to,
                                                                            @NotNull UUID participantId) {
-        return getExecutionFactDTOS(to, (notNullTo, pageSize) -> executionFactRepository
-                .getAllFinishedInRangeForParticipant(from, notNullTo, participantId, pageSize)
+        return getExecutionFactDTOS(from, to, (validatedFrom, notNullTo, pageable) -> executionFactRepository
+                .getAllFinishedInRangeForParticipant(validatedFrom, notNullTo, participantId, pageable)
         );
     }
 
@@ -121,23 +126,26 @@ public class ExecutionFactServiceImpl implements ExecutionFactService {
 
     @Override
     public List<GetExecutionFactDTO> getActiveForDateRange(@NotNull LocalDateTime from, @Nullable LocalDateTime to) {
-        return getExecutionFactDTOS(to, (notNullTo, pageSize) -> executionFactRepository
-                .getAllActiveInRange(from, notNullTo, pageSize)
-        );
+        return getExecutionFactDTOS(from, to, executionFactRepository::getAllActiveInRange);
     }
 
     @Override
     public List<GetExecutionFactDTO> getActiveForDateRangeForParticipant(@NotNull LocalDateTime from,
                                                                          @Nullable LocalDateTime to,
                                                                          @NotNull UUID participantId) {
-        return getExecutionFactDTOS(to, (notNullTo, pageSize) -> executionFactRepository
-                .getAllActiveInRangeForParticipant(from, notNullTo, participantId, pageSize)
+        return getExecutionFactDTOS(from, to, (validatedFrom, notNullTo, pageable) -> executionFactRepository
+                .getAllActiveInRangeForParticipant(validatedFrom, notNullTo, participantId, pageable)
         );
     }
 
     @Override
     public GetExecutionFactDTO getById(UUID id) {
         return mapEntityToGetDTO(getRawExecutionFact(id));
+    }
+
+    @FunctionalInterface
+    public interface TripletFunction<A1, A2, A3, R> {
+        R apply(A1 argument1, A2 argument2, A3 argument3);
     }
 
 }
