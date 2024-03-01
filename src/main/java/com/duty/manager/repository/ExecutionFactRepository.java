@@ -14,6 +14,19 @@ import java.util.UUID;
 @Repository
 public interface ExecutionFactRepository extends JpaRepository<ExecutionFact, UUID> {
 
+    @Query("select f from ExecutionFact f "
+            + "where f.startTime >= :from and f.startTime <= :to or f.finishTime >= :from and f.finishTime <= :to")
+    List<ExecutionFact> getAllInRange(@Param("from") LocalDateTime from, @Param("to") LocalDateTime to,
+                                      Pageable pageable);
+
+    @Query("select f from ExecutionFact f "
+            + "where (f.startTime >= :from and f.startTime <= :to or"
+            + " f.finishTime >= :from and f.finishTime <= :to) and f.executor.id = :participantId")
+    List<ExecutionFact> getAllInRangeForParticipant(@Param("from") LocalDateTime from,
+                                                    @Param("to") LocalDateTime to,
+                                                    @Param("participantId") UUID participantId,
+                                                    Pageable pageable);
+
     @Query("select f from ExecutionFact f where f.finishTime >= :from and f.finishTime <= :to")
     List<ExecutionFact> getAllFinishedInRange(@Param("from") LocalDateTime from, @Param("to") LocalDateTime to,
                                               Pageable pageable);

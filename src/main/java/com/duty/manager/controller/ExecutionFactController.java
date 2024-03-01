@@ -182,5 +182,44 @@ public class ExecutionFactController {
         return executionFactService.getActiveForDateRangeForParticipant(from, to, executorId);
     }
 
+    @GetMapping(params = {"from"})
+    @Operation(description = "Returns execution facts based on specified date range," +
+            " \"start date\" or \"finish time\" is used for search, Default value for \"to\"" +
+            " is current day. The limit for maximal list size is 200")
+    @ApiResponse(
+            responseCode = "200",
+            description = "Retrieved",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    array = @ArraySchema(
+                            schema = @Schema(implementation = GetExecutionFactDTO.class)
+                    )
+            )
+    )
+    public List<GetExecutionFactDTO> getForDateRange(@RequestParam LocalDateTime from,
+                                                     @RequestParam(required = false) LocalDateTime to) {
+        return executionFactService.getInRange(from, to);
+    }
+
+    @GetMapping(params = {"from", "executorId"})
+    @Operation(description = "Returns execution facts based on specified date range and for specific executor," +
+            " \"start date\" or \"finish time\" is used for search, Default value for \"to\"" +
+            " is current day. The limit for maximal list size is 200")
+    @ApiResponse(
+            responseCode = "200",
+            description = "Retrieved",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    array = @ArraySchema(
+                            schema = @Schema(implementation = GetExecutionFactDTO.class)
+                    )
+            )
+    )
+    public List<GetExecutionFactDTO> getForDateRangeForExecutor(@RequestParam LocalDateTime from,
+                                                                @RequestParam(required = false) LocalDateTime to,
+                                                                @RequestParam UUID executorId) {
+        return executionFactService.getInRangeForParticipant(from, to, executorId);
+    }
+
 
 }

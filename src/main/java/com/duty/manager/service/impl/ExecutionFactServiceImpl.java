@@ -2,12 +2,12 @@ package com.duty.manager.service.impl;
 
 import com.duty.manager.dto.GetExecutionFactDTO;
 import com.duty.manager.dto.RecordExecutionFactDTO;
-import com.duty.manager.entity.Template;
 import com.duty.manager.entity.ExecutionFact;
 import com.duty.manager.entity.Role;
-import com.duty.manager.repository.TemplateRepository;
+import com.duty.manager.entity.Template;
 import com.duty.manager.repository.ExecutionFactRepository;
 import com.duty.manager.repository.ParticipantRepository;
+import com.duty.manager.repository.TemplateRepository;
 import com.duty.manager.service.ExecutionFactService;
 import com.duty.manager.service.ServiceException;
 import com.duty.manager.service.TimeService;
@@ -24,9 +24,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
-import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
 @Service
@@ -64,8 +64,10 @@ public class ExecutionFactServiceImpl implements ExecutionFactService {
         if (to == null) {
             to = timeService.now();
         }
-        if (from.isAfter(to) || from.isAfter(timeService.now())) {
-            throw new ServiceException("From date can not be after to date, or from date can not be in the future");
+        if (from.isAfter(to)) {
+            throw new ServiceException("From date can not be after to date");
+        } else if (from.isAfter(timeService.now())) {
+            return new LinkedList<>();
         }
         return factSupplier.apply(from, to, PageRequest.ofSize(MAXIMAL_PAGE_SIZE)).stream()
                 .map(this::mapEntityToGetDTO)
@@ -141,6 +143,18 @@ public class ExecutionFactServiceImpl implements ExecutionFactService {
     @Override
     public GetExecutionFactDTO getById(UUID id) {
         return mapEntityToGetDTO(getRawExecutionFact(id));
+    }
+
+    @Override
+    public List<GetExecutionFactDTO> getInRange(@NotNull LocalDateTime from, @Nullable LocalDateTime to) {
+        return getExecutionFactDTOS(from, to, executionFactRepository::getAllInRange);
+    }
+
+    @Override
+    public List<GetExecutionFactDTO> getInRangeForParticipant(@NotNull LocalDateTime from, @Nullable LocalDateTime to, @NotNull UUID participantId) {
+        return getExecutionFactDTOS(from, to, (validatedFrom, notNullTo, pageable) -> executionFactRepository
+                .getAllInRangeForParticipant(validatedFrom, notNullTo, participantId, pageable)
+        );
     }
 
     @FunctionalInterface

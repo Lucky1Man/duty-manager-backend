@@ -31,4 +31,9 @@ public interface ExecutionFactService {
 
     GetExecutionFactDTO getById(UUID id);
 
+    List<GetExecutionFactDTO> getInRange(@NotNull LocalDateTime from, @Nullable LocalDateTime to);
+
+    List<GetExecutionFactDTO> getInRangeForParticipant(@NotNull LocalDateTime from, @Nullable LocalDateTime to,
+                                                       @NotNull UUID participantId);
+
 }
