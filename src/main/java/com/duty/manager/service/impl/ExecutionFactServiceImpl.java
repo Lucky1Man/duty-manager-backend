@@ -14,6 +14,7 @@ import com.duty.manager.service.TimeService;
 import jakarta.annotation.Nullable;
 import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -52,11 +53,12 @@ public class ExecutionFactServiceImpl implements ExecutionFactService {
     }
 
     @Override
-    public List<GetExecutionFactDTO> getFinishedForDateRange(@NotNull LocalDateTime from, @Nullable LocalDateTime to) {
-        return getExecutionFactDTOS(from, to, executionFactRepository::getAllFinishedInRange);
+    public List<GetExecutionFactDTO> getFinishedForDateRange(@NotNull LocalDateTime from, @Nullable LocalDateTime to,
+                                                             @Nullable @Max(200) Integer pageSize) {
+        return getExecutionFactDTOS(from, to, pageSize, executionFactRepository::getAllFinishedInRange);
     }
 
-    private List<GetExecutionFactDTO> getExecutionFactDTOS(LocalDateTime from, LocalDateTime to,
+    private List<GetExecutionFactDTO> getExecutionFactDTOS(LocalDateTime from, LocalDateTime to, Integer pageSize,
                                                            TripletFunction<LocalDateTime,
                                                                    LocalDateTime,
                                                                    Pageable,
@@ -64,12 +66,15 @@ public class ExecutionFactServiceImpl implements ExecutionFactService {
         if (to == null) {
             to = timeService.now();
         }
+        if (pageSize == null) {
+            pageSize = MAXIMAL_PAGE_SIZE;
+        }
         if (from.isAfter(to)) {
             throw new ServiceException("From date can not be after to date");
         } else if (from.isAfter(timeService.now())) {
             return new LinkedList<>();
         }
-        return factSupplier.apply(from, to, PageRequest.ofSize(MAXIMAL_PAGE_SIZE)).stream()
+        return factSupplier.apply(from, to, PageRequest.ofSize(pageSize)).stream()
                 .map(this::mapEntityToGetDTO)
                 .toList();
     }
@@ -98,8 +103,9 @@ public class ExecutionFactServiceImpl implements ExecutionFactService {
     @Override
     public List<GetExecutionFactDTO> getFinishedForDateRangeForParticipant(@NotNull LocalDateTime from,
                                                                            @Nullable LocalDateTime to,
-                                                                           @NotNull UUID participantId) {
-        return getExecutionFactDTOS(from, to, (validatedFrom, notNullTo, pageable) -> executionFactRepository
+                                                                           @NotNull UUID participantId,
+                                                                           @Nullable @Max(200) Integer pageSize) {
+        return getExecutionFactDTOS(from, to, pageSize, (validatedFrom, notNullTo, pageable) -> executionFactRepository
                 .getAllFinishedInRangeForParticipant(validatedFrom, notNullTo, participantId, pageable)
         );
     }
@@ -123,19 +129,21 @@ public class ExecutionFactServiceImpl implements ExecutionFactService {
     }
 
     private Supplier<ServiceException> notFound(String identifier) {
-        return () -> new ServiceException("Execution fact with id %s not found".formatted(identifier));
+        return () -> new ServiceException("Execution fact with id %s not found".formatted(identifier), HttpStatus.NOT_FOUND);
     }
 
     @Override
-    public List<GetExecutionFactDTO> getActiveForDateRange(@NotNull LocalDateTime from, @Nullable LocalDateTime to) {
-        return getExecutionFactDTOS(from, to, executionFactRepository::getAllActiveInRange);
+    public List<GetExecutionFactDTO> getActiveForDateRange(@NotNull LocalDateTime from, @Nullable LocalDateTime to,
+                                                           @Nullable @Max(200) Integer pageSize) {
+        return getExecutionFactDTOS(from, to, pageSize, executionFactRepository::getAllActiveInRange);
     }
 
     @Override
     public List<GetExecutionFactDTO> getActiveForDateRangeForParticipant(@NotNull LocalDateTime from,
                                                                          @Nullable LocalDateTime to,
-                                                                         @NotNull UUID participantId) {
-        return getExecutionFactDTOS(from, to, (validatedFrom, notNullTo, pageable) -> executionFactRepository
+                                                                         @NotNull UUID participantId,
+                                                                         @Nullable @Max(200) Integer pageSize) {
+        return getExecutionFactDTOS(from, to, pageSize, (validatedFrom, notNullTo, pageable) -> executionFactRepository
                 .getAllActiveInRangeForParticipant(validatedFrom, notNullTo, participantId, pageable)
         );
     }
@@ -146,13 +154,15 @@ public class ExecutionFactServiceImpl implements ExecutionFactService {
     }
 
     @Override
-    public List<GetExecutionFactDTO> getInRange(@NotNull LocalDateTime from, @Nullable LocalDateTime to) {
-        return getExecutionFactDTOS(from, to, executionFactRepository::getAllInRange);
+    public List<GetExecutionFactDTO> getInRange(@NotNull LocalDateTime from, @Nullable LocalDateTime to,
+                                                @Nullable @Max(200) Integer pageSize) {
+        return getExecutionFactDTOS(from, to, pageSize, executionFactRepository::getAllInRange);
     }
 
     @Override
-    public List<GetExecutionFactDTO> getInRangeForParticipant(@NotNull LocalDateTime from, @Nullable LocalDateTime to, @NotNull UUID participantId) {
-        return getExecutionFactDTOS(from, to, (validatedFrom, notNullTo, pageable) -> executionFactRepository
+    public List<GetExecutionFactDTO> getInRangeForParticipant(@NotNull LocalDateTime from, @Nullable LocalDateTime to,
+                                                              @NotNull UUID participantId, @Nullable @Max(200) Integer pageSize) {
+        return getExecutionFactDTOS(from, to, pageSize, (validatedFrom, notNullTo, pageable) -> executionFactRepository
                 .getAllInRangeForParticipant(validatedFrom, notNullTo, participantId, pageable)
         );
     }

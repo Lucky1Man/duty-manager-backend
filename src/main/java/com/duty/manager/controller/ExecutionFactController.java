@@ -6,6 +6,7 @@ import com.duty.manager.dto.RecordExecutionFactDTO;
 import com.duty.manager.service.ExecutionFactService;
 import com.duty.manager.service.TestimonyService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -51,8 +52,9 @@ public class ExecutionFactController {
             )
     )
     public List<GetExecutionFactDTO> getFinishedForDateRange(@RequestParam LocalDateTime from,
-                                                             @RequestParam(required = false) LocalDateTime to) {
-        return executionFactService.getFinishedForDateRange(from, to);
+                                                             @RequestParam(required = false) LocalDateTime to,
+                                                             @RequestParam(required = false) Integer pageSize) {
+        return executionFactService.getFinishedForDateRange(from, to, pageSize);
     }
 
     @PostMapping
@@ -76,6 +78,7 @@ public class ExecutionFactController {
     @Operation(
             description = "Sets finish time for execution fact with given id to current time." +
                     " You can finish only your execution task, ADMIN can finish any."
+            ,parameters = @Parameter()
     )
     @ApiResponse(
             responseCode = "200",
@@ -139,8 +142,9 @@ public class ExecutionFactController {
     )
     public List<GetExecutionFactDTO> getFinishedForDateRangeForExecutor(@RequestParam LocalDateTime from,
                                                                         @RequestParam(required = false) LocalDateTime to,
-                                                                        @RequestParam UUID executorId) {
-        return executionFactService.getFinishedForDateRangeForParticipant(from, to, executorId);
+                                                                        @RequestParam UUID executorId,
+                                                                        @RequestParam(required = false) Integer pageSize) {
+        return executionFactService.getFinishedForDateRangeForParticipant(from, to, executorId, pageSize);
     }
 
     @GetMapping(path = "/active", params = {"from"})
@@ -158,8 +162,9 @@ public class ExecutionFactController {
             )
     )
     public List<GetExecutionFactDTO> getActiveForDateRange(@RequestParam LocalDateTime from,
-                                                           @RequestParam(required = false) LocalDateTime to) {
-        return executionFactService.getActiveForDateRange(from, to);
+                                                           @RequestParam(required = false) LocalDateTime to,
+                                                           @RequestParam(required = false) Integer pageSize) {
+        return executionFactService.getActiveForDateRange(from, to, pageSize);
     }
 
     @GetMapping(path = "/active", params = {"from", "executorId"})
@@ -178,8 +183,9 @@ public class ExecutionFactController {
     )
     public List<GetExecutionFactDTO> getActiveForDateRangeForExecutor(@RequestParam LocalDateTime from,
                                                                       @RequestParam(required = false) LocalDateTime to,
-                                                                      @RequestParam UUID executorId) {
-        return executionFactService.getActiveForDateRangeForParticipant(from, to, executorId);
+                                                                      @RequestParam UUID executorId,
+                                                                      @RequestParam(required = false) Integer pageSize) {
+        return executionFactService.getActiveForDateRangeForParticipant(from, to, executorId, pageSize);
     }
 
     @GetMapping(params = {"from"})
@@ -197,8 +203,9 @@ public class ExecutionFactController {
             )
     )
     public List<GetExecutionFactDTO> getForDateRange(@RequestParam LocalDateTime from,
-                                                     @RequestParam(required = false) LocalDateTime to) {
-        return executionFactService.getInRange(from, to);
+                                                     @RequestParam(required = false) LocalDateTime to,
+                                                     @RequestParam(required = false) Integer pageSize) {
+        return executionFactService.getInRange(from, to, pageSize);
     }
 
     @GetMapping(params = {"from", "executorId"})
@@ -217,8 +224,23 @@ public class ExecutionFactController {
     )
     public List<GetExecutionFactDTO> getForDateRangeForExecutor(@RequestParam LocalDateTime from,
                                                                 @RequestParam(required = false) LocalDateTime to,
-                                                                @RequestParam UUID executorId) {
-        return executionFactService.getInRangeForParticipant(from, to, executorId);
+                                                                @RequestParam UUID executorId,
+                                                                @RequestParam(required = false) Integer pageSize) {
+        return executionFactService.getInRangeForParticipant(from, to, executorId, pageSize);
+    }
+
+    @GetMapping("/{id}")
+    @Operation(description = "Returns execution fact by given id.")
+    @ApiResponse(
+            responseCode = "200",
+            description = "Retrieved",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = GetExecutionFactDTO.class)
+            )
+    )
+    public GetExecutionFactDTO getByID(@PathVariable UUID id) {
+        return executionFactService.getById(id);
     }
 
 

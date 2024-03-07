@@ -6,7 +6,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.persistence.Version;
@@ -44,7 +43,7 @@ public class Testimony {
     private UUID id;
 
     @NotNull(message = "Testimony must have witness")
-    @OneToOne(optional = false)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "witness_id", referencedColumnName = "id", nullable = false)
     private Participant witness;
 
