@@ -4,7 +4,6 @@ import com.duty.manager.dto.GetExecutionFactDTO;
 import com.duty.manager.dto.RecordExecutionFactDTO;
 import com.duty.manager.entity.ExecutionFact;
 import com.duty.manager.entity.Role;
-import com.duty.manager.entity.Template;
 import com.duty.manager.repository.ExecutionFactRepository;
 import com.duty.manager.repository.ParticipantRepository;
 import com.duty.manager.repository.TemplateRepository;
@@ -17,7 +16,9 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.PropertyMap;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -28,6 +29,7 @@ import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 @Service
@@ -49,7 +51,25 @@ public class ExecutionFactServiceImpl implements ExecutionFactService {
 
     @PostConstruct
     private void configureModelMapper() {
-        modelMapper.getConfiguration().setAmbiguityIgnored(true);
+        modelMapper.addMappings(new PropertyMap<RecordExecutionFactDTO, ExecutionFact>() {
+            @Override
+            protected void configure() {
+                skip().setId(null);
+                using(idToEntityConvertor(templateRepository::getReferenceById))
+                        .map(source.getTemplateId()).setTemplate(null);
+                using(idToEntityConvertor(participantRepository::getReferenceById))
+                        .map(source.getExecutorId()).setExecutor(null);
+                with(req -> timeService.now()).map().setStartTime(null);
+            }
+        });
+        this.modelMapper.createTypeMap(ExecutionFact.class, GetExecutionFactDTO.class).addMappings(mapping -> {
+            mapping.map(src -> src.getExecutor().getId(), GetExecutionFactDTO::setExecutorId);
+            mapping.map(src -> src.getTemplate().getId(), GetExecutionFactDTO::setTemplateId);
+        });
+    }
+
+    private <E> Converter<UUID, E> idToEntityConvertor(Function<UUID, E> supplier) {
+        return ctx -> supplier.apply(ctx.getSource());
     }
 
     @Override
@@ -88,15 +108,10 @@ public class ExecutionFactServiceImpl implements ExecutionFactService {
     @Override
     public UUID recordExecutionFact(RecordExecutionFactDTO factDTO) {
         ExecutionFact fact = modelMapper.map(factDTO, ExecutionFact.class);
-        fact.setStartTime(timeService.now());
-        if (factDTO.getTemplateId() != null) {
-            Template template = templateRepository.getReferenceById(fact.getTemplate().getId());
-            fact.setTemplate(template);
-            if (factDTO.getDescription() == null) {
-                fact.setDescription(template.getDescription());
-            }
+        if (factDTO.getDescription() == null ||
+                factDTO.getDescription().trim().isEmpty() && factDTO.getTemplateId() != null) {
+            fact.setDescription(fact.getTemplate().getDescription());
         }
-        fact.setExecutor(participantRepository.getReferenceById(fact.getExecutor().getId()));
         return executionFactRepository.save(fact).getId();
     }
 

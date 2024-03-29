@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
@@ -19,10 +20,14 @@ public interface TemplateService {
 
     List<GetTemplateDTO> getTemplates(@NotNull @Min(0) Integer page, @Max(50) @NotNull Integer pageSize);
 
-    GetTemplateDTO getTemplates(@NotNull String identifier);
+    GetTemplateDTO getTemplate(@NotNull String identifier);
 
     void updateTemplates(@NotNull String identifier, @Valid UpdateTemplateDTO updateTemplateDTO);
 
     void deleteTemplates(@NotNull String identifier);
+
+    Long getNumberOfEntities();
+
+    List<GetTemplateDTO> getTemplatesByFuzzyName(@NotNull @Length(max = 100) String fuzzyName);
 
 }

@@ -41,7 +41,7 @@ public class RestControllerExceptionHandler {
 
     @ExceptionHandler(ServiceException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ExceptionResponse handleHibernateConstraintViolationException(
+    public ExceptionResponse handleServiceException(
             ServiceException e) {
         return ExceptionResponse.builder()
                 .withMessage(e.getMessage())
@@ -63,7 +63,7 @@ public class RestControllerExceptionHandler {
 
     @ExceptionHandler(ExpiredJwtException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ExceptionResponse handleConversionFailedException(
+    public ExceptionResponse handleExpiredJwtException(
             ExpiredJwtException e) {
         return ExceptionResponse.builder()
                 .withMessage("Your session expired.")
@@ -74,7 +74,7 @@ public class RestControllerExceptionHandler {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ExceptionResponse handleConversionFailedException(
+    public ExceptionResponse handleHttpMessageNotReadableException(
             HttpMessageNotReadableException e) {
         return ExceptionResponse.builder()
                 .withMessage(e.getMessage())
@@ -85,8 +85,19 @@ public class RestControllerExceptionHandler {
 
     @ExceptionHandler(UsernameNotFoundException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ExceptionResponse handleConversionFailedException(
+    public ExceptionResponse handleUsernameNotFoundException(
             UsernameNotFoundException e) {
+        return ExceptionResponse.builder()
+                .withMessage(e.getMessage())
+                .withHttpStatus(HttpStatus.BAD_REQUEST)
+                .withDate(LocalDateTime.now())
+                .build();
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ExceptionResponse handleIllegalArgumentExceptionException(
+            IllegalArgumentException e) {
         return ExceptionResponse.builder()
                 .withMessage(e.getMessage())
                 .withHttpStatus(HttpStatus.BAD_REQUEST)

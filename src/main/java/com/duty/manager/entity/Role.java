@@ -41,6 +41,9 @@ public class Role implements GrantedAuthority {
     @Transient
     public static final Role PARTICIPANT = Role.builder().withName("PARTICIPANT").build();
 
+    @Transient
+    public static final Role GUEST = Role.builder().withName("GUEST").build();
+
     @Id
     @GeneratedValue
     @Column(name = "id", nullable = false, columnDefinition="uuid")

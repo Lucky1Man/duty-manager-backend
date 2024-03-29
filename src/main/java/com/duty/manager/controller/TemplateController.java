@@ -34,8 +34,15 @@ public class TemplateController {
 
     private final TemplateService templateService;
 
-    @GetMapping
-    @Operation(description = "Returns templates at specified page with specified page size. Page count starts from 0.")
+    @GetMapping(params = {"page", "pageSize"})
+    @Operation(description = """
+            Has two different sets of parameters, page && pageSize || fuzzyName.
+                        
+            When page && pageSize are specified returns templates at specified page with
+            specified page size. Page count starts from 0.
+                        
+            When fuzzyName is specified return all templates which names are fuzzy matched.
+            """)
     @ApiResponse(
             responseCode = "200",
             description = "Returns templates that are at specified page with specified page size",
@@ -46,11 +53,16 @@ public class TemplateController {
                     )
             )
     )
-    public List<GetTemplateDTO> getTemplates(@RequestParam(required = false, defaultValue = "0")
-                                   Integer page,
-                                   @RequestParam(required = false, defaultValue = "50")
-                                   Integer pageSize) {
+    public List<GetTemplateDTO> getTemplates(@RequestParam(defaultValue = "0")
+                                             Integer page,
+                                             @RequestParam(defaultValue = "50")
+                                             Integer pageSize) {
         return templateService.getTemplates(page, pageSize);
+    }
+
+    @GetMapping(params = {"fuzzyName"})
+    public List<GetTemplateDTO> getByFuzzyName(@RequestParam String fuzzyName) {
+        return templateService.getTemplatesByFuzzyName(fuzzyName);
     }
 
     @GetMapping("/{templateIdentifier}")
@@ -72,7 +84,7 @@ public class TemplateController {
             )
     )
     public GetTemplateDTO getTemplate(@PathVariable String templateIdentifier) {
-        return templateService.getTemplates(templateIdentifier);
+        return templateService.getTemplate(templateIdentifier);
     }
 
     @PostMapping
@@ -131,6 +143,14 @@ public class TemplateController {
     )
     public void deleteTemplate(@PathVariable String templateIdentifier) {
         templateService.deleteTemplates(templateIdentifier);
+    }
+
+    @GetMapping("/quantity")
+    @Operation(
+            description = "Returns total number of templates."
+    )
+    public Long getNumberOfTemplates() {
+        return templateService.getNumberOfEntities();
     }
 
 }

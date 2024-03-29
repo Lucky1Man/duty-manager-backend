@@ -3,16 +3,18 @@ package com.duty.manager.service.impl;
 import com.duty.manager.dto.CreateTemplateDTO;
 import com.duty.manager.dto.GetTemplateDTO;
 import com.duty.manager.dto.UpdateTemplateDTO;
+import com.duty.manager.entity.ExecutionFact;
 import com.duty.manager.entity.Template;
 import com.duty.manager.repository.TemplateRepository;
-import com.duty.manager.service.TemplateService;
 import com.duty.manager.service.ServiceException;
+import com.duty.manager.service.TemplateService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -40,7 +42,7 @@ public class TemplateServiceImpl implements TemplateService {
     private void throwExceptionIfExist(CreateTemplateDTO templateDTO) {
         String name = templateDTO.getName();
         try {
-            getTemplates(name);
+            getTemplate(name);
             throw new IllegalArgumentException(
                     "Template with name %s already exists".formatted(name)
             );
@@ -59,7 +61,7 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
-    public GetTemplateDTO getTemplates(@NotNull String identifier) {
+    public GetTemplateDTO getTemplate(@NotNull String identifier) {
         return templateEntityToGetDTO(getRowTemplate(identifier));
     }
 
@@ -91,11 +93,27 @@ public class TemplateServiceImpl implements TemplateService {
     public void deleteTemplates(@NotNull String identifier) {
         try {
             Template template = getRowTemplate(identifier);
+            List<ExecutionFact> relatedFacts = template.getFacts();
+            if (!relatedFacts.isEmpty()) {
+                relatedFacts.forEach(fact -> fact.setTemplate(null));
+            }
             templateRepository.delete(template);
             templateRepository.flush();
         } catch (Exception e) {
             throw new ServiceException(e.getMessage());
         }
+    }
+
+    @Override
+    public Long getNumberOfEntities() {
+        return templateRepository.count();
+    }
+
+    @Override
+    public List<GetTemplateDTO> getTemplatesByFuzzyName(@NotNull @Length(max = 100) String fuzzyName) {
+        return templateRepository.fuzzySearchByName(fuzzyName).stream()
+                .map(this::templateEntityToGetDTO)
+                .toList();
     }
 
 }

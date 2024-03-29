@@ -32,4 +32,6 @@ public class GetExecutionFactDTO {
 
     private String description;
 
+    private UUID templateId;
+
 }
