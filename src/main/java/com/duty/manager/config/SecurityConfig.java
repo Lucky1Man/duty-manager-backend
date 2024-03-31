@@ -1,6 +1,8 @@
 package com.duty.manager.config;
 
 import com.duty.manager.entity.Role;
+import com.duty.manager.service.TimeService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Generated;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -25,9 +27,14 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    public static final String API_V_1_TEMPLATES = "/api/v1/templates/*";
+    public static final String ANY_API_V_1 = "/api/v1/**";
+
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final AuthenticationProvider authenticationProvider;
     private final JwtExceptionFilter jwtExceptionFilter;
+    private final ObjectMapper objectMapper;
+    private final TimeService timeService;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -37,13 +44,21 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/jwt").permitAll()
                         .requestMatchers(HttpMethod.GET, "/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/participants").permitAll()
-                        .requestMatchers(HttpMethod.DELETE, "/api/v1/templates/*").hasRole(Role.ADMIN.getName())
-                        .requestMatchers(HttpMethod.PUT, "/api/v1/templates/*").hasRole(Role.ADMIN.getName())
-                        .requestMatchers(HttpMethod.POST, "/api/v1/templates/*").hasRole(Role.ADMIN.getName())
+                        .requestMatchers(HttpMethod.POST, "/api/v1/participants").hasRole(Role.ADMIN.getName())
+                        .requestMatchers(HttpMethod.POST, ANY_API_V_1).hasAnyRole(Role.ADMIN.getName(), Role.PARTICIPANT.getName())
+                        .requestMatchers(HttpMethod.PUT, ANY_API_V_1).hasAnyRole(Role.ADMIN.getName(), Role.PARTICIPANT.getName())
+                        .requestMatchers(HttpMethod.DELETE, ANY_API_V_1).hasAnyRole(Role.ADMIN.getName(), Role.PARTICIPANT.getName())
+                        .requestMatchers(HttpMethod.DELETE, API_V_1_TEMPLATES).hasRole(Role.ADMIN.getName())
+                        .requestMatchers(HttpMethod.PUT, API_V_1_TEMPLATES).hasRole(Role.ADMIN.getName())
+                        .requestMatchers(HttpMethod.POST, API_V_1_TEMPLATES).hasRole(Role.ADMIN.getName())
                         .anyRequest().authenticated()
                 )
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .exceptionHandling(exConf -> exConf.authenticationEntryPoint(
+                        new RestResponseAuthenticationEntryPoint(objectMapper, timeService)
+                ))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtExceptionFilter, JwtAuthenticationFilter.class);

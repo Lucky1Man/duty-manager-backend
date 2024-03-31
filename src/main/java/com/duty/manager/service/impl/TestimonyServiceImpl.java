@@ -1,6 +1,7 @@
 package com.duty.manager.service.impl;
 
 import com.duty.manager.dto.GetTestimonyDTO;
+import com.duty.manager.entity.Role;
 import com.duty.manager.entity.Testimony;
 import com.duty.manager.repository.ExecutionFactRepository;
 import com.duty.manager.repository.ParticipantRepository;
@@ -23,9 +24,8 @@ import java.util.UUID;
 import java.util.function.Supplier;
 
 @Service
-@RequiredArgsConstructor
 @Transactional
-public class TestimonyServiceImpl implements TestimonyService {
+public class TestimonyServiceImpl extends RoleBasedMappingService implements TestimonyService {
 
     private final TimeService timeService;
 
@@ -36,6 +36,19 @@ public class TestimonyServiceImpl implements TestimonyService {
     private final ExecutionFactRepository executionFactRepository;
 
     private final ModelMapper modelMapper;
+
+    public TestimonyServiceImpl(ModelMapper modelMapper,
+                                TimeService timeService,
+                                TestimonyRepository testimonyRepository,
+                                ParticipantRepository participantRepository,
+                                ExecutionFactRepository executionFactRepository) {
+        super(modelMapper);
+        this.timeService = timeService;
+        this.testimonyRepository = testimonyRepository;
+        this.participantRepository = participantRepository;
+        this.executionFactRepository = executionFactRepository;
+        this.modelMapper = modelMapper;
+    }
 
     @Override
     public UUID testifyExecutionFact(@NotNull UUID executionFactId, @NotNull Authentication authentication) {
@@ -77,7 +90,7 @@ public class TestimonyServiceImpl implements TestimonyService {
     }
 
     private GetTestimonyDTO mapToGetDTO(Testimony t) {
-        GetTestimonyDTO getDTO = modelMapper.map(t, GetTestimonyDTO.class);
+        GetTestimonyDTO getDTO = super.mapToDto(t, GetTestimonyDTO.class, Role.GUEST);
         getDTO.setTemplateName(t.getExecutionFact().getTemplate().getName());
         return getDTO;
     }

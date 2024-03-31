@@ -62,12 +62,12 @@ public class RestControllerExceptionHandler {
     }
 
     @ExceptionHandler(ExpiredJwtException.class)
-    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ExceptionResponse handleExpiredJwtException(
             ExpiredJwtException e) {
         return ExceptionResponse.builder()
                 .withMessage("Your session expired.")
-                .withHttpStatus(HttpStatus.FORBIDDEN)
+                .withHttpStatus(HttpStatus.UNAUTHORIZED)
                 .withDate(LocalDateTime.now())
                 .build();
     }

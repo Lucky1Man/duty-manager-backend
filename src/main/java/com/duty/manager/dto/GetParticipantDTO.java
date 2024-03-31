@@ -1,18 +1,19 @@
 package com.duty.manager.dto;
 
 import com.duty.manager.entity.Role;
+import com.fasterxml.jackson.annotation.JsonGetter;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.util.UUID;
 
-@Builder(setterPrefix = "with")
+@SuperBuilder(setterPrefix = "with")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class GetParticipantDTO  {
+public class GetParticipantDTO extends GetSecuredDTO {
 
     private UUID id;
 
@@ -23,4 +24,16 @@ public class GetParticipantDTO  {
     private Role role;
 
     private String jwt;
+
+
+    @JsonGetter
+    public String getFullName() {
+        return super.getSecuredString(fullName);
+    }
+
+    @JsonGetter
+    public String getEmail() {
+        return super.getSecuredString(email);
+    }
+
 }

@@ -4,6 +4,7 @@ import com.duty.manager.dto.CreateTemplateDTO;
 import com.duty.manager.dto.GetTemplateDTO;
 import com.duty.manager.dto.UpdateTemplateDTO;
 import com.duty.manager.entity.ExecutionFact;
+import com.duty.manager.entity.Role;
 import com.duty.manager.entity.Template;
 import com.duty.manager.repository.TemplateRepository;
 import com.duty.manager.service.ServiceException;
@@ -13,7 +14,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
@@ -24,13 +24,18 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
 @Transactional
-public class TemplateServiceImpl implements TemplateService {
+public class TemplateServiceImpl extends RoleBasedMappingService implements TemplateService {
 
     private final TemplateRepository templateRepository;
 
     private final ModelMapper modelMapper;
+
+    public TemplateServiceImpl(ModelMapper modelMapper, TemplateRepository templateRepository) {
+        super(modelMapper);
+        this.templateRepository = templateRepository;
+        this.modelMapper = modelMapper;
+    }
 
     @Override
     public UUID createTemplate(CreateTemplateDTO templateDTO) {
@@ -57,7 +62,7 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     private GetTemplateDTO templateEntityToGetDTO(Template template) {
-        return modelMapper.map(template, GetTemplateDTO.class);
+        return super.mapToDto(template, GetTemplateDTO.class, Role.GUEST);
     }
 
     @Override

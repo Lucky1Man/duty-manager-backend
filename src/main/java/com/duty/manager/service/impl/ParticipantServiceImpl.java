@@ -13,7 +13,6 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,14 +24,24 @@ import java.util.UUID;
 import java.util.function.Supplier;
 
 @Service
-@RequiredArgsConstructor
 @Transactional
-public class ParticipantServiceImpl implements ParticipantService, UserDetailsProvider<Participant> {
+public class ParticipantServiceImpl extends RoleBasedMappingService implements ParticipantService, UserDetailsProvider<Participant> {
 
     private final ParticipantRepository participantRepository;
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
+
+    public ParticipantServiceImpl(ModelMapper modelMapper,
+                                  ParticipantRepository participantRepository,
+                                  PasswordEncoder passwordEncoder,
+                                  RoleRepository roleRepository) {
+        super(modelMapper);
+        this.participantRepository = participantRepository;
+        this.modelMapper = modelMapper;
+        this.passwordEncoder = passwordEncoder;
+        this.roleRepository = roleRepository;
+    }
 
     @Override
     public UUID registerParticipant(RegisterParticipantDTO registerParticipantDTO) {
@@ -61,7 +70,7 @@ public class ParticipantServiceImpl implements ParticipantService, UserDetailsPr
     }
 
     private GetParticipantDTO mapToGetDTO(Participant participant) {
-        return modelMapper.map(participant, GetParticipantDTO.class);
+        return super.mapToDto(participant, GetParticipantDTO.class, Role.GUEST);
     }
 
     private Supplier<ServiceException> notFound(String identifier) {

@@ -33,9 +33,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 @Service
-@RequiredArgsConstructor
 @Transactional
-public class ExecutionFactServiceImpl implements ExecutionFactService {
+public class ExecutionFactServiceImpl extends RoleBasedMappingService implements ExecutionFactService {
 
     public static final int MAXIMAL_PAGE_SIZE = 200;
 
@@ -48,6 +47,19 @@ public class ExecutionFactServiceImpl implements ExecutionFactService {
     private final TemplateRepository templateRepository;
 
     private final ParticipantRepository participantRepository;
+
+    public ExecutionFactServiceImpl(ModelMapper modelMapper,
+                                    ExecutionFactRepository executionFactRepository,
+                                    TimeService timeService,
+                                    TemplateRepository templateRepository,
+                                    ParticipantRepository participantRepository) {
+        super(modelMapper);
+        this.executionFactRepository = executionFactRepository;
+        this.timeService = timeService;
+        this.modelMapper = modelMapper;
+        this.templateRepository = templateRepository;
+        this.participantRepository = participantRepository;
+    }
 
     @PostConstruct
     private void configureModelMapper() {
@@ -100,8 +112,11 @@ public class ExecutionFactServiceImpl implements ExecutionFactService {
     }
 
     private GetExecutionFactDTO mapEntityToGetDTO(ExecutionFact fact) {
-        GetExecutionFactDTO getDTO = modelMapper.map(fact, GetExecutionFactDTO.class);
-        getDTO.getTestimonies().forEach(t -> t.setTemplateName(getDTO.getTemplateName()));
+        GetExecutionFactDTO getDTO = super.mapToDto(fact, GetExecutionFactDTO.class, Role.GUEST);
+        getDTO.getTestimonies().forEach(t -> {
+            t.setTemplateName(getDTO.getTemplateName());
+            t.setSecured(getDTO.isSecured());
+        });
         return getDTO;
     }
 
