@@ -1,17 +1,21 @@
 spring:
+  profiles:
+    active: prod
   jpa:
     open-in-view: false
     hibernate:
       ddl-auto: validate
   datasource:
-    url: jdbc:postgresql://localhost:5432/${DB_NAME}
+    url: jdbc:postgresql://${DB_ADDRESS}:5432/${DB_NAME}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
 application:
   security:
     jwt:
       secret-key: ${JWT_KEY}
-      expiration: 3600000
+      expiration: 7200000
 server:
   address: ${SERVER_ADDRESS}
   port: ${SERVER_PORT}
+frontend:
+  address: ${FRONTEND_ADDRESS}

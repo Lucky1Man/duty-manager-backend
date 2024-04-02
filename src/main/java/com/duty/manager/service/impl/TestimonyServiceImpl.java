@@ -13,7 +13,6 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.Authentication;
@@ -35,7 +34,6 @@ public class TestimonyServiceImpl extends RoleBasedMappingService implements Tes
 
     private final ExecutionFactRepository executionFactRepository;
 
-    private final ModelMapper modelMapper;
 
     public TestimonyServiceImpl(ModelMapper modelMapper,
                                 TimeService timeService,
@@ -47,7 +45,6 @@ public class TestimonyServiceImpl extends RoleBasedMappingService implements Tes
         this.testimonyRepository = testimonyRepository;
         this.participantRepository = participantRepository;
         this.executionFactRepository = executionFactRepository;
-        this.modelMapper = modelMapper;
     }
 
     @Override

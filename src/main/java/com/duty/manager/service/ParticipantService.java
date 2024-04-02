@@ -1,5 +1,6 @@
 package com.duty.manager.service;
 
+import com.duty.manager.dto.ChangePasswordDTO;
 import com.duty.manager.dto.GetParticipantDTO;
 import com.duty.manager.dto.RegisterParticipantDTO;
 import jakarta.validation.Valid;
@@ -19,4 +20,6 @@ public interface ParticipantService {
     GetParticipantDTO getParticipant(String identifier);
 
     List<GetParticipantDTO> getParticipants(@Min(0) @NotNull Integer page, @Max(200) @NotNull Integer pageSize);
+
+    void changePassword(String identifier, @NotNull ChangePasswordDTO changePasswordDTO);
 }

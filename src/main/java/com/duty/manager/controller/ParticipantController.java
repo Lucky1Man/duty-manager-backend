@@ -1,5 +1,6 @@
 package com.duty.manager.controller;
 
+import com.duty.manager.dto.ChangePasswordDTO;
 import com.duty.manager.dto.GetTemplateDTO;
 import com.duty.manager.dto.GetParticipantDTO;
 import com.duty.manager.dto.RegisterParticipantDTO;
@@ -47,7 +48,7 @@ public class ParticipantController {
     )
     public ResponseEntity<UUID> register(@RequestBody RegisterParticipantDTO participantDTO) {
         return ResponseEntity.status(HttpStatus.CREATED.value())
-                .body( participantService.registerParticipant(participantDTO));
+                .body(participantService.registerParticipant(participantDTO));
     }
 
     @GetMapping("/{identifier}")
@@ -93,6 +94,12 @@ public class ParticipantController {
                                                    @RequestParam(required = false, defaultValue = "200")
                                                    Integer pageSize) {
         return participantService.getParticipants(page, pageSize);
+    }
+
+    @PostMapping("/{identifier}/password")
+    @Operation(description = "Changes password for participant with given identifier, identifier can be either email or id.")
+    public void changePassword(@PathVariable String identifier, @RequestBody ChangePasswordDTO passwordDTO) {
+        participantService.changePassword(identifier, passwordDTO);
     }
 
 }

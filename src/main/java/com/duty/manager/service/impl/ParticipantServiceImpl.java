@@ -1,5 +1,6 @@
 package com.duty.manager.service.impl;
 
+import com.duty.manager.dto.ChangePasswordDTO;
 import com.duty.manager.dto.GetParticipantDTO;
 import com.duty.manager.dto.RegisterParticipantDTO;
 import com.duty.manager.entity.Participant;
@@ -15,6 +16,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -61,11 +63,15 @@ public class ParticipantServiceImpl extends RoleBasedMappingService implements P
 
     @Override
     public GetParticipantDTO getParticipant(String identifier) {
+        return mapToGetDTO(getRawParticipant(identifier));
+    }
+
+    private Participant getRawParticipant(String identifier) {
         try {
             UUID id = UUID.fromString(identifier);
-            return mapToGetDTO(participantRepository.findById(id).orElseThrow(notFound(identifier)));
+            return participantRepository.findById(id).orElseThrow(notFound(identifier));
         } catch (IllegalArgumentException e) {
-            return mapToGetDTO(participantRepository.findByEmail(identifier).orElseThrow(notFound(identifier)));
+            return participantRepository.findByEmail(identifier).orElseThrow(notFound(identifier));
         }
     }
 
@@ -80,6 +86,16 @@ public class ParticipantServiceImpl extends RoleBasedMappingService implements P
     @Override
     public List<GetParticipantDTO> getParticipants(@Min(0) @NotNull Integer page, @Max(200) @NotNull Integer pageSize) {
         return participantRepository.findAll(PageRequest.of(page, pageSize)).stream().map(this::mapToGetDTO).toList();
+    }
+
+    @Override
+    public void changePassword(String identifier, @NotNull ChangePasswordDTO changePasswordDTO) {
+        Participant participant = getRawParticipant(identifier);
+        if(passwordEncoder.matches(changePasswordDTO.getOldPassword(), participant.getPassword())) {
+            participant.setPassword(passwordEncoder.encode(changePasswordDTO.getNewPassword()));
+        } else {
+            throw new ServiceException("Old password incorrect.", HttpStatus.BAD_REQUEST);
+        }
     }
 
     @Override
