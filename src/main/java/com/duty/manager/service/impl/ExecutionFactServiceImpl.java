@@ -66,7 +66,7 @@ public class ExecutionFactServiceImpl extends RoleBasedMappingService implements
             @Override
             protected void configure() {
                 skip().setId(null);
-                using(idToEntityConvertor(templateRepository::getReferenceById))
+                using(idToEntityConvertor(id -> getNullableReferenceById(id, templateRepository::getReferenceById)))
                         .map(source.getTemplateId()).setTemplate(null);
                 using(idToEntityConvertor(participantRepository::getReferenceById))
                         .map(source.getExecutorId()).setExecutor(null);
@@ -81,6 +81,14 @@ public class ExecutionFactServiceImpl extends RoleBasedMappingService implements
 
     private <E> Converter<UUID, E> idToEntityConvertor(Function<UUID, E> supplier) {
         return ctx -> supplier.apply(ctx.getSource());
+    }
+
+    private <E> E getNullableReferenceById(UUID id, Function<UUID, E> supplier) {
+        if (id == null) {
+            return null;
+        } else {
+            return supplier.apply(id);
+        }
     }
 
     @Override
@@ -194,6 +202,20 @@ public class ExecutionFactServiceImpl extends RoleBasedMappingService implements
         return getExecutionFactDTOS(from, to, pageSize, (validatedFrom, notNullTo, pageable) -> executionFactRepository
                 .getAllInRangeForParticipant(validatedFrom, notNullTo, participantId, pageable)
         );
+    }
+
+    @Override
+    public void deleteExecutionFact(UUID factId) {
+        ExecutionFact fact = getRawExecutionFact(factId);
+        if (!fact.getTestimonies().isEmpty()) {
+            throw new ServiceException("You can not delete this execution fact as it was testified.", HttpStatus.BAD_REQUEST);
+        }
+        authAwareCall(authentication -> {
+            if (fact.getExecutor().getEmail().equals(authentication.getName()) ||
+                    containsRole(authentication, Role.ADMIN)) {
+                executionFactRepository.delete(fact);
+            }
+        });
     }
 
     @FunctionalInterface

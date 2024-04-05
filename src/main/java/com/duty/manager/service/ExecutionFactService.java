@@ -39,4 +39,6 @@ public interface ExecutionFactService {
     List<GetExecutionFactDTO> getInRangeForParticipant(@NotNull LocalDateTime from, @Nullable LocalDateTime to,
                                                        @NotNull UUID participantId, @Nullable @Max(200) Integer pageSize);
 
+    void deleteExecutionFact(UUID factId);
+
 }

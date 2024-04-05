@@ -13,7 +13,7 @@ application:
   security:
     jwt:
       secret-key: ${JWT_KEY}
-      expiration: 7200000
+      expiration: 64800000
 server:
   address: ${SERVER_ADDRESS}
   port: ${SERVER_PORT}

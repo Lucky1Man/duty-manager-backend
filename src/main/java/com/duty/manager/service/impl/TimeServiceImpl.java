@@ -4,13 +4,14 @@ import com.duty.manager.service.TimeService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
 @Service
 public class TimeServiceImpl implements TimeService {
 
     @Override
     public LocalDateTime now() {
-        return LocalDateTime.now();
+        return LocalDateTime.now(ZoneOffset.UTC);
     }
 
 }

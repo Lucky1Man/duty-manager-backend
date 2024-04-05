@@ -6,7 +6,7 @@ create table if not exists execution_facts
     executor_id uuid         not null,
     id          uuid         not null,
     template_id uuid,
-    description varchar(255) not null,
+    description varchar(500) not null,
     primary key (id)
 );
 
@@ -96,6 +96,7 @@ INSERT INTO public.participants (id, email, full_name, password, version, role_i
 INSERT INTO public.participants (id, email, full_name, password, version, role_id) VALUES ('2a8163b7-8144-493a-b23e-c96dafd5d5cc', 'anonim@gmail.com', 'Anonim', '$2a$10$ZjzjFOe9qaiUMFhIz7nwAOAiLQq.4CmMZ5f7rJvvyPa9pAk/9FnEe', 0, 'bd2dc76e-9117-42c3-882f-d440f51a7641');
 
 -- create extension IF NOT EXISTS pg_trgm;
+-- CREATE INDEX templates_name_fuzzy_search_index ON templates USING GIN (name gin_trgm_ops);
 
 -- grant all on duty_manager.public.testimonies to "";
 -- grant all on duty_manager.public.roles to "";

@@ -122,7 +122,7 @@ public class TemplateController {
             description = "Means that template was updated and all given parameters were changed"
     )
     public void updateTemplate(@PathVariable String templateIdentifier, @RequestBody UpdateTemplateDTO updateTemplateDTO) {
-        templateService.updateTemplates(templateIdentifier, updateTemplateDTO);
+        templateService.updateTemplate(templateIdentifier, updateTemplateDTO);
     }
 
     @DeleteMapping("/{templateIdentifier}")
@@ -142,7 +142,7 @@ public class TemplateController {
             )
     )
     public void deleteTemplate(@PathVariable String templateIdentifier) {
-        templateService.deleteTemplates(templateIdentifier);
+        templateService.deleteTemplate(templateIdentifier);
     }
 
     @GetMapping("/quantity")

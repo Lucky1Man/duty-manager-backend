@@ -16,6 +16,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
@@ -62,8 +63,10 @@ public class ExecutionFact {
     @NotNull(message = "Description must be present.")
     @Column(
             name = "description",
+            columnDefinition = "varchar(500)",
             nullable = false
     )
+    @Length(min = 1, max = 500)
     private String description;
 
     @OneToMany(mappedBy = "executionFact")

@@ -12,9 +12,9 @@ public class RoleBasedMappingService extends AuthenticationAwareService {
     private final ModelMapper modelMapper;
 
     public <S, D extends GetSecuredDTO> D mapToDto(S source, Class<D> destination, @Nullable Role forbiddenRole) {
-        return avoidingRoleCall(needsToBeSecured -> {
+        return roleAwareCall(searchResult -> {
             D mappedDTO = modelMapper.map(source, destination);
-            mappedDTO.setSecured(needsToBeSecured);
+            mappedDTO.setSecured(searchResult);
             return mappedDTO;
         }, forbiddenRole);
     }

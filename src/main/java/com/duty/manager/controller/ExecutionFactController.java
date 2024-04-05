@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -243,5 +244,24 @@ public class ExecutionFactController {
         return executionFactService.getById(id);
     }
 
+    @DeleteMapping("/{id}")
+    @Operation(
+            description = "Deletes execution fact with given id"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "Means that execution fact was deleted"
+    )
+    @ApiResponse(
+            responseCode = "400",
+            description = "Means that execution fact with given identifier does not exist",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = ExceptionResponse.class)
+            )
+    )
+    public void deleteExecutionFact(@PathVariable UUID id) {
+        executionFactService.deleteExecutionFact(id);
+    }
 
 }

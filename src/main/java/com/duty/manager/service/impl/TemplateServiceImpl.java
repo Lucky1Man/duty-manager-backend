@@ -47,7 +47,7 @@ public class TemplateServiceImpl extends RoleBasedMappingService implements Temp
     private void throwExceptionIfExist(CreateTemplateDTO templateDTO) {
         String name = templateDTO.getName();
         try {
-            getTemplate(name);
+            getRowTemplate(name);
             throw new IllegalArgumentException(
                     "Template with name %s already exists".formatted(name)
             );
@@ -83,7 +83,7 @@ public class TemplateServiceImpl extends RoleBasedMappingService implements Temp
     }
 
     @Override
-    public void updateTemplates(@NotNull String identifier, @Valid UpdateTemplateDTO templateUpdates) {
+    public void updateTemplate(@NotNull String identifier, @Valid UpdateTemplateDTO templateUpdates) {
         Template template = getRowTemplate(identifier);
         if (templateUpdates.getName() != null && templateRepository.findByName(templateUpdates.getName()).isEmpty()) {
             template.setName(templateUpdates.getName());
@@ -95,7 +95,7 @@ public class TemplateServiceImpl extends RoleBasedMappingService implements Temp
     }
 
     @Override
-    public void deleteTemplates(@NotNull String identifier) {
+    public void deleteTemplate(@NotNull String identifier) {
         try {
             Template template = getRowTemplate(identifier);
             List<ExecutionFact> relatedFacts = template.getFacts();

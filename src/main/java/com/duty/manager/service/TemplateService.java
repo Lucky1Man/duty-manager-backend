@@ -22,9 +22,9 @@ public interface TemplateService {
 
     GetTemplateDTO getTemplate(@NotNull String identifier);
 
-    void updateTemplates(@NotNull String identifier, @Valid UpdateTemplateDTO updateTemplateDTO);
+    void updateTemplate(@NotNull String identifier, @Valid UpdateTemplateDTO updateTemplateDTO);
 
-    void deleteTemplates(@NotNull String identifier);
+    void deleteTemplate(@NotNull String identifier);
 
     Long getNumberOfEntities();
 
