@@ -57,7 +57,7 @@ public class TestimonyServiceImpl extends RoleBasedMappingService implements Tes
                 Testimony.builder()
                         .withExecutionFact(executionFactRepository.getReferenceById(executionFactId))
                         .withWitness(participantRepository.getReferenceById(witnessId))
-                        .withTimestamp(timeService.now())
+                        .withTimestamp(timeService.utcNow())
                         .build()
         ).getId();
     }

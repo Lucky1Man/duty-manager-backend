@@ -10,7 +10,7 @@ import java.time.ZoneOffset;
 public class TimeServiceImpl implements TimeService {
 
     @Override
-    public LocalDateTime now() {
+    public LocalDateTime utcNow() {
         return LocalDateTime.now(ZoneOffset.UTC);
     }
 

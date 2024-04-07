@@ -30,7 +30,7 @@ public class RestResponseAuthenticationEntryPoint implements AuthenticationEntry
         response.setCharacterEncoding("UTF-8");
         writer.print(objectMapper.writeValueAsString(ExceptionResponse.builder()
                 .withMessage("You are not logged in, or you do not have rights to perform this action.")
-                .withDate(timeService.now())
+                .withDate(timeService.utcNow())
                 .withHttpStatus(HttpStatus.UNAUTHORIZED)
                 .build()));
         writer.flush();

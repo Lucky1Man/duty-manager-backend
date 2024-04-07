@@ -20,11 +20,15 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.datetime.standard.DateTimeContext;
+import org.springframework.format.datetime.standard.DateTimeContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -70,7 +74,7 @@ public class ExecutionFactServiceImpl extends RoleBasedMappingService implements
                         .map(source.getTemplateId()).setTemplate(null);
                 using(idToEntityConvertor(participantRepository::getReferenceById))
                         .map(source.getExecutorId()).setExecutor(null);
-                with(req -> timeService.now()).map().setStartTime(null);
+                with(req -> timeService.utcNow()).map().setStartTime(null);
             }
         });
         this.modelMapper.createTypeMap(ExecutionFact.class, GetExecutionFactDTO.class).addMappings(mapping -> {
@@ -102,20 +106,37 @@ public class ExecutionFactServiceImpl extends RoleBasedMappingService implements
                                                                    LocalDateTime,
                                                                    Pageable,
                                                                    List<ExecutionFact>> factSupplier) {
+        DateTimeContext ctx = DateTimeContextHolder.getDateTimeContext();
         if (to == null) {
-            to = timeService.now();
+            to = timeService.utcNow();
+        } else {
+            to = getUtcZonedTime(to, ctx);
         }
+        from = getUtcZonedTime(from, ctx);
         if (pageSize == null) {
             pageSize = MAXIMAL_PAGE_SIZE;
         }
         if (from.isAfter(to)) {
             throw new ServiceException("From date can not be after to date");
-        } else if (from.isAfter(timeService.now())) {
+        } else if (from.isAfter(timeService.utcNow())) {
             return new LinkedList<>();
         }
         return factSupplier.apply(from, to, PageRequest.ofSize(pageSize)).stream()
                 .map(this::mapEntityToGetDTO)
                 .toList();
+    }
+
+    private LocalDateTime getUtcZonedTime(LocalDateTime dateTime, DateTimeContext ctx) {
+        ZoneId id;
+        if(ctx == null) {
+            return dateTime;
+        } else {
+            id = ctx.getTimeZone();
+            if(id == null) {
+                return dateTime;
+            }
+        }
+        return dateTime.atZone(id).withZoneSameInstant(ZoneOffset.UTC).toLocalDateTime();
     }
 
     private GetExecutionFactDTO mapEntityToGetDTO(ExecutionFact fact) {
@@ -157,7 +178,7 @@ public class ExecutionFactServiceImpl extends RoleBasedMappingService implements
         if (executionFact.getFinishTime() != null) {
             throw new ServiceException("Execution fact with id %s is already finished".formatted(id));
         }
-        executionFact.setFinishTime(timeService.now());
+        executionFact.setFinishTime(timeService.utcNow());
         executionFactRepository.flush();
     }
 
