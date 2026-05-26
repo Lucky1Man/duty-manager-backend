@@ -1,4 +1,11 @@
-FROM openjdk:23-slim
+FROM maven:3.9-eclipse-temurin-17 AS build
+WORKDIR /app
+COPY pom.xml .
+RUN mvn dependency:go-offline -q
+COPY src ./src
+RUN mvn package -DskipTests -q
+
+FROM eclipse-temurin:17-jre-slim
 EXPOSE 8080
 
 ARG DB_ADDRESS_ARG=localhost
@@ -19,5 +26,5 @@ ENV SERVER_PORT=${SERVER_PORT_ARG}
 ENV SERVER_ADDRESS=${SERVER_ADDRESS_ARG}
 ENV FRONTEND_ADDRESS=${FRONTEND_ADDRESS_ARG}
 
-COPY target/duty-manager-backend-0.0.1-SNAPSHOT.jar duty-manager-backend-0.0.1-SNAPSHOT.jar
-ENTRYPOINT ["java","-jar","/duty-manager-backend-0.0.1-SNAPSHOT.jar"]
+COPY --from=build /app/target/duty-manager-backend-0.0.1-SNAPSHOT.jar duty-manager-backend-0.0.1-SNAPSHOT.jar
+ENTRYPOINT ["java", "-jar", "/duty-manager-backend-0.0.1-SNAPSHOT.jar"]
