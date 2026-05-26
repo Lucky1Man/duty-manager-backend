@@ -1,7 +1,6 @@
 package com.duty.manager.controller;
 
 import com.duty.manager.dto.ChangePasswordDTO;
-import com.duty.manager.dto.GetTemplateDTO;
 import com.duty.manager.dto.GetParticipantDTO;
 import com.duty.manager.dto.RegisterParticipantDTO;
 import com.duty.manager.service.ParticipantService;
@@ -58,7 +57,7 @@ public class ParticipantController {
             description = "Returns participant with specified id or email",
             content = @Content(
                     mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    schema = @Schema(implementation = GetTemplateDTO.class)
+                    schema = @Schema(implementation = GetParticipantDTO.class)
             )
     )
     @ApiResponse(
