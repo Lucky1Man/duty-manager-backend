@@ -27,10 +27,10 @@ services:
       DB_NAME: duty_manager
       DB_USERNAME: backend_1
       DB_PASSWORD: backend_1
-      JWT_KEY: ${JWT_KEY:-change-this-secret-min-32-chars-long}
+      JWT_KEY: ${JWT_KEY:-9A4B7E2D1F8C63A0E5D9B2C4F7A813E6B0CD5F82A6E94D7B3C1A8F5E7B}
       SERVER_PORT: 8080
       SERVER_ADDRESS: 0.0.0.0
-      FRONTEND_ADDRESS: localhost
+      FRONTEND_ADDRESS: http://localhost:4200/
     depends_on:
       db:
         condition: service_healthy
