@@ -19,3 +19,14 @@ server:
   port: ${SERVER_PORT}
 frontend:
   address: ${FRONTEND_ADDRESS}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, metrics, prometheus
+  metrics:
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+      percentiles:
+        http.server.requests: 0.5, 0.95, 0.99
